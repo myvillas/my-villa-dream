@@ -6,7 +6,6 @@ import {
   TrendingUp,
   Users,
   ArrowUpRight,
-  ArrowDownRight,
   Clock,
 } from "lucide-react";
 import {
@@ -20,34 +19,33 @@ import {
 } from "recharts";
 
 const revenueData = [
-  { month: "Jan", revenue: 12400 },
-  { month: "Feb", revenue: 15600 },
-  { month: "Mar", revenue: 18200 },
-  { month: "Apr", revenue: 22800 },
-  { month: "May", revenue: 28400 },
-  { month: "Jun", revenue: 35200 },
-  { month: "Jul", revenue: 42000 },
-  { month: "Aug", revenue: 45600 },
-  { month: "Sep", revenue: 38200 },
-  { month: "Oct", revenue: 29800 },
-  { month: "Nov", revenue: 21400 },
-  { month: "Dec", revenue: 16800 },
+  { month: "Jan", revenue: 3200 },
+  { month: "Feb", revenue: 4100 },
+  { month: "Mar", revenue: 5800 },
+  { month: "Apr", revenue: 7200 },
+  { month: "May", revenue: 9600 },
+  { month: "Jun", revenue: 12400 },
+  { month: "Jul", revenue: 14800 },
+  { month: "Aug", revenue: 15600 },
+  { month: "Sep", revenue: 11200 },
+  { month: "Oct", revenue: 7800 },
+  { month: "Nov", revenue: 4200 },
+  { month: "Dec", revenue: 2800 },
 ];
 
 const recentReservations = [
-  { id: "R-1042", guest: "Maria Santos", villa: "Villa Azure", checkIn: "Mar 10", nights: 5, status: "confirmed" },
-  { id: "R-1041", guest: "James Wilson", villa: "Villa Sunset", checkIn: "Mar 12", nights: 7, status: "pending" },
-  { id: "R-1040", guest: "Sophie Laurent", villa: "Villa Olive", checkIn: "Mar 8", nights: 3, status: "checked-in" },
-  { id: "R-1039", guest: "Hans Mueller", villa: "Villa Breeze", checkIn: "Mar 15", nights: 4, status: "confirmed" },
-  { id: "R-1038", guest: "Elena Rossi", villa: "Villa Coral", checkIn: "Mar 9", nights: 6, status: "checked-in" },
+  { id: "R-1042", guest: "Maria Santos", suite: "Wave I", checkIn: "Mar 10", nights: 5, status: "confirmed" },
+  { id: "R-1041", guest: "James Wilson", suite: "Wave II", checkIn: "Mar 12", nights: 7, status: "pending" },
+  { id: "R-1040", guest: "Sophie Laurent", suite: "Wave III", checkIn: "Mar 8", nights: 4, status: "checked-in" },
+  { id: "R-1039", guest: "Hans Mueller", suite: "Wave I", checkIn: "Mar 18", nights: 5, status: "confirmed" },
+  { id: "R-1038", guest: "Elena Rossi", suite: "Wave II", checkIn: "Mar 22", nights: 6, status: "pending" },
 ];
 
 const todayActivity = [
-  { time: "08:00", event: "Check-out: Villa Azure — Maria Santos", type: "departure" },
-  { time: "10:30", event: "Housekeeping: Villa Azure — Deep clean", type: "housekeeping" },
-  { time: "14:00", event: "Check-in: Villa Sunset — James Wilson", type: "arrival" },
-  { time: "15:30", event: "Check-in: Villa Breeze — Hans Mueller", type: "arrival" },
-  { time: "18:00", event: "Maintenance: Villa Olive — Pool filter", type: "maintenance" },
+  { time: "08:00", event: "Check-out: Wave I — Maria Santos", type: "departure" },
+  { time: "10:30", event: "Housekeeping: Wave I — Deep clean", type: "housekeeping" },
+  { time: "14:00", event: "Check-in: Wave II — James Wilson", type: "arrival" },
+  { time: "16:00", event: "Check-in: Wave III — Sophie Laurent", type: "arrival" },
 ];
 
 const statusColors: Record<string, string> = {
@@ -71,7 +69,7 @@ export default function Dashboard() {
       <div>
         <h1 className="text-2xl font-bold font-heading text-foreground">Dashboard</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Welcome back! Here's what's happening at your properties today.
+          3 Waves Paros — Here's what's happening at your suites today.
         </p>
       </div>
 
@@ -79,27 +77,27 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Occupancy Rate"
-          value="78%"
+          value="67%"
           change="+12%"
           icon={<BedDouble className="w-5 h-5 text-primary-foreground" />}
           variant="primary"
         />
         <StatCard
           title="Today's Arrivals"
-          value={4}
+          value={2}
           icon={<ArrowUpRight className="w-5 h-5 text-accent-foreground" />}
           variant="accent"
         />
         <StatCard
           title="Active Reservations"
-          value={23}
-          change="+8%"
+          value={5}
+          change="+2"
           icon={<CalendarCheck className="w-5 h-5 text-muted-foreground" />}
         />
         <StatCard
           title="Revenue (MTD)"
-          value="€42,580"
-          change="+15%"
+          value="€5,840"
+          change="+18%"
           icon={<TrendingUp className="w-5 h-5 text-muted-foreground" />}
         />
       </div>
@@ -200,7 +198,7 @@ export default function Dashboard() {
               <tr className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">
                 <th className="pb-3 pr-4">ID</th>
                 <th className="pb-3 pr-4">Guest</th>
-                <th className="pb-3 pr-4">Villa</th>
+                <th className="pb-3 pr-4">Suite</th>
                 <th className="pb-3 pr-4">Check-in</th>
                 <th className="pb-3 pr-4">Nights</th>
                 <th className="pb-3">Status</th>
@@ -211,7 +209,7 @@ export default function Dashboard() {
                 <tr key={r.id} className="border-t border-border/50 hover:bg-muted/30 transition-colors">
                   <td className="py-3 pr-4 font-mono text-muted-foreground">{r.id}</td>
                   <td className="py-3 pr-4 font-medium text-foreground">{r.guest}</td>
-                  <td className="py-3 pr-4 text-foreground">{r.villa}</td>
+                  <td className="py-3 pr-4 text-foreground">{r.suite}</td>
                   <td className="py-3 pr-4 text-muted-foreground">{r.checkIn}</td>
                   <td className="py-3 pr-4 text-muted-foreground">{r.nights}</td>
                   <td className="py-3">

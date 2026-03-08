@@ -18,7 +18,7 @@ const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
   { icon: CalendarDays, label: "Calendar", path: "/calendar" },
   { icon: BookOpen, label: "Reservations", path: "/reservations" },
-  { icon: Home, label: "Villas", path: "/villas" },
+  { icon: Home, label: "Suites", path: "/villas" },
   { icon: Users, label: "Guests", path: "/guests" },
   { icon: BarChart3, label: "Reports", path: "/reports" },
   { icon: Settings, label: "Settings", path: "/settings" },
@@ -115,8 +115,8 @@ export default function AppSidebar() {
           <AnimatePresence>
             {!collapsed && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <p className="text-xs text-sidebar-foreground/50">Active Properties</p>
-                <p className="text-lg font-bold text-sidebar-primary">12</p>
+                <p className="text-xs text-sidebar-foreground/50">Active Suites</p>
+                <p className="text-lg font-bold text-sidebar-primary">3</p>
               </motion.div>
             )}
           </AnimatePresence>
