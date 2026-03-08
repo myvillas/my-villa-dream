@@ -30,11 +30,16 @@ const detailTabs = ["Accommodations", "Guests", "Charges", "Payments", "Log"];
 
 export default function ReservationDetailDialog({ reservation, onClose }: Props) {
   const { data: suites } = useSuites();
+  const { data: payments = [] } = usePayments(reservation?.id);
+  const createPayment = useCreatePayment();
+  const deletePayment = useDeletePayment();
   const updateReservation = useUpdateReservation();
   const deleteReservation = useDeleteReservation();
   const [activeTab, setActiveTab] = useState("Accommodations");
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [paymentForm, setPaymentForm] = useState({ amount: "", method: "cash", reference: "", notes: "" });
 
   const [form, setForm] = useState({
     guest_name: "", guest_email: "", guest_phone: "", guest_country_flag: "",
