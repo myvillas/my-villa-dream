@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { X, Trash2, Users, BedDouble, Receipt, CreditCard, FileText, Clock, Mail } from "lucide-react";
+import { X, Trash2, Users, BedDouble, Receipt, CreditCard, FileText, Clock, Mail, Plus } from "lucide-react";
 import { useUpdateReservation, useDeleteReservation, type Reservation } from "@/hooks/use-reservations";
+import { usePayments, useCreatePayment, useDeletePayment } from "@/hooks/use-payments";
 import { useSuites } from "@/hooks/use-suites";
 import { toast } from "sonner";
 
