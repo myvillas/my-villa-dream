@@ -102,14 +102,19 @@ export default function NewReservationDialog({ open, onClose }: Props) {
         reservation_code: generateCode(),
         guest_name: form.guest_name,
         guest_email: form.guest_email,
+        guest_phone: form.guest_phone || null,
+        guest_country: form.guest_country || null,
+        guest_country_flag: null,
         suite_name: form.suite_name,
         check_in: form.check_in,
         check_out: form.check_out,
         nights,
         total_amount: totalAmount,
+        balance: totalAmount,
         source: form.source,
         notes: form.notes || null,
         status: "pending",
+        invoice_status: "not-invoiced",
       });
 
       queryClient.invalidateQueries({ queryKey: ["guests"] });
