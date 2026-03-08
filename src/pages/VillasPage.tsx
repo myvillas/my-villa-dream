@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Users, MapPin, Star, MoreHorizontal, Maximize } from "lucide-react";
+import { useState } from "react";
+import { Users, MapPin, Star, Maximize, Check, X, Pencil } from "lucide-react";
 import { useSuites, useUpdateSuite } from "@/hooks/use-suites";
 import { toast } from "sonner";
 
@@ -15,6 +16,8 @@ const statusOptions = ["available", "occupied", "cleaning", "maintenance"];
 export default function VillasPage() {
   const { data: suites = [], isLoading } = useSuites();
   const updateSuite = useUpdateSuite();
+  const [editingPrice, setEditingPrice] = useState<string | null>(null);
+  const [priceValue, setPriceValue] = useState("");
 
   const stats = {
     available: suites.filter(v => v.status === "available").length,
@@ -30,6 +33,31 @@ export default function VillasPage() {
     } catch (err: any) {
       toast.error(err.message || "Failed to update");
     }
+  };
+
+  const startEditPrice = (suiteId: string, currentPrice: number) => {
+    setEditingPrice(suiteId);
+    setPriceValue(String(currentPrice));
+  };
+
+  const savePrice = async (suiteId: string) => {
+    const newPrice = parseFloat(priceValue);
+    if (isNaN(newPrice) || newPrice <= 0) {
+      toast.error("Please enter a valid price");
+      return;
+    }
+    try {
+      await updateSuite.mutateAsync({ id: suiteId, price_per_night: newPrice });
+      toast.success("Price updated!");
+      setEditingPrice(null);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update price");
+    }
+  };
+
+  const cancelEditPrice = () => {
+    setEditingPrice(null);
+    setPriceValue("");
   };
 
   if (isLoading) {
@@ -69,7 +97,6 @@ export default function VillasPage() {
               </div>
             </div>
             <div className="p-4 space-y-3">
-              {/* Status selector */}
               <div className="flex items-center justify-between">
                 <div className="flex gap-1">
                   {statusOptions.map(s => (
@@ -91,8 +118,35 @@ export default function VillasPage() {
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1"><Maximize className="w-3.5 h-3.5" /> {suite.size}</div>
                 <div className="flex items-center gap-1"><Users className="w-3.5 h-3.5" /> {suite.max_guests} guests</div>
-                <div className="ml-auto font-semibold text-foreground text-sm">
-                  €{suite.price_per_night}<span className="text-xs font-normal text-muted-foreground">/night</span>
+                <div className="ml-auto">
+                  {editingPrice === suite.id ? (
+                    <div className="flex items-center gap-1">
+                      <span className="text-foreground font-semibold">€</span>
+                      <input
+                        type="number"
+                        value={priceValue}
+                        onChange={(e) => setPriceValue(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === "Enter") savePrice(suite.id); if (e.key === "Escape") cancelEditPrice(); }}
+                        className="w-16 px-1.5 py-0.5 rounded border border-border bg-background text-sm text-foreground font-semibold outline-none focus:ring-1 focus:ring-accent"
+                        autoFocus
+                      />
+                      <button onClick={() => savePrice(suite.id)} className="p-0.5 rounded hover:bg-success/10 transition-colors">
+                        <Check className="w-3.5 h-3.5 text-success" />
+                      </button>
+                      <button onClick={cancelEditPrice} className="p-0.5 rounded hover:bg-destructive/10 transition-colors">
+                        <X className="w-3.5 h-3.5 text-destructive" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => startEditPrice(suite.id, suite.price_per_night)}
+                      className="flex items-center gap-1 group/price hover:bg-muted/50 rounded px-1.5 py-0.5 -mx-1.5 transition-colors"
+                    >
+                      <span className="font-semibold text-foreground text-sm">€{suite.price_per_night}</span>
+                      <span className="text-xs font-normal text-muted-foreground">/night</span>
+                      <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover/price:opacity-100 transition-opacity" />
+                    </button>
+                  )}
                 </div>
               </div>
 
