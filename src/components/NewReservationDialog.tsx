@@ -2,7 +2,10 @@ import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { useCreateReservation } from "@/hooks/use-reservations";
 import { useSuites } from "@/hooks/use-suites";
+import { useCreateGuest, useGuests } from "@/hooks/use-guests";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Props {
   open: boolean;
@@ -11,21 +14,26 @@ interface Props {
 
 export default function NewReservationDialog({ open, onClose }: Props) {
   const { data: suites } = useSuites();
+  const { data: guests } = useGuests();
   const createReservation = useCreateReservation();
+  const queryClient = useQueryClient();
 
   const [form, setForm] = useState({
     guest_name: "",
     guest_email: "",
+    guest_phone: "",
+    guest_country: "",
     suite_name: "",
     check_in: "",
     check_out: "",
     source: "Direct",
     notes: "",
+    custom_total: "",
   });
 
   useEffect(() => {
     if (open) {
-      setForm({ guest_name: "", guest_email: "", suite_name: "", check_in: "", check_out: "", source: "Direct", notes: "" });
+      setForm({ guest_name: "", guest_email: "", guest_phone: "", guest_country: "", suite_name: "", check_in: "", check_out: "", source: "Direct", notes: "", custom_total: "" });
     }
   }, [open]);
 
@@ -36,7 +44,8 @@ export default function NewReservationDialog({ open, onClose }: Props) {
     : 0;
 
   const selectedSuite = suites?.find(s => s.name === form.suite_name);
-  const totalAmount = selectedSuite ? nights * selectedSuite.price_per_night : 0;
+  const suggestedTotal = selectedSuite ? nights * selectedSuite.price_per_night : 0;
+  const totalAmount = form.custom_total ? parseFloat(form.custom_total) : suggestedTotal;
 
   const generateCode = () => {
     const num = Math.floor(1000 + Math.random() * 9000);
@@ -53,8 +62,42 @@ export default function NewReservationDialog({ open, onClose }: Props) {
       toast.error("Check-out must be after check-in");
       return;
     }
+    if (totalAmount <= 0) {
+      toast.error("Please enter a valid total amount");
+      return;
+    }
 
     try {
+      // Upsert guest: find existing by email or create new
+      const existingGuest = guests?.find(g => g.email.toLowerCase() === form.guest_email.toLowerCase());
+      
+      if (existingGuest) {
+        // Update existing guest stats
+        await supabase.from("guests").update({
+          name: form.guest_name,
+          total_stays: (existingGuest.total_stays || 0) + 1,
+          total_spent: (existingGuest.total_spent || 0) + totalAmount,
+          last_suite: form.suite_name,
+          last_visit: new Date(form.check_in).toLocaleDateString("en-US", { month: "short", year: "numeric" }),
+          ...(form.guest_phone ? { phone: form.guest_phone } : {}),
+          ...(form.guest_country ? { country: form.guest_country } : {}),
+        }).eq("id", existingGuest.id);
+      } else {
+        // Create new guest
+        await supabase.from("guests").insert({
+          name: form.guest_name,
+          email: form.guest_email,
+          phone: form.guest_phone || null,
+          country: form.guest_country || null,
+          total_stays: 1,
+          total_spent: totalAmount,
+          last_suite: form.suite_name,
+          last_visit: new Date(form.check_in).toLocaleDateString("en-US", { month: "short", year: "numeric" }),
+          rating: 4,
+          vip: false,
+        });
+      }
+
       await createReservation.mutateAsync({
         reservation_code: generateCode(),
         guest_name: form.guest_name,
@@ -68,7 +111,9 @@ export default function NewReservationDialog({ open, onClose }: Props) {
         notes: form.notes || null,
         status: "pending",
       });
-      toast.success("Reservation created successfully!");
+
+      queryClient.invalidateQueries({ queryKey: ["guests"] });
+      toast.success("Reservation created & guest updated!");
       onClose();
     } catch (err: any) {
       toast.error(err.message || "Failed to create reservation");
@@ -88,18 +133,33 @@ export default function NewReservationDialog({ open, onClose }: Props) {
           </button>
         </div>
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
+          {/* Guest Info */}
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Guest Details</p>
           <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2 sm:col-span-1">
-              <label className="text-xs font-medium text-muted-foreground mb-1 block">Guest Name *</label>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Name *</label>
               <input value={form.guest_name} onChange={e => update("guest_name", e.target.value)}
                 className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent" />
             </div>
-            <div className="col-span-2 sm:col-span-1">
-              <label className="text-xs font-medium text-muted-foreground mb-1 block">Guest Email *</label>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Email *</label>
               <input type="email" value={form.guest_email} onChange={e => update("guest_email", e.target.value)}
                 className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent" />
             </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Phone</label>
+              <input value={form.guest_phone} onChange={e => update("guest_phone", e.target.value)} placeholder="+30 ..."
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent" />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Country</label>
+              <input value={form.guest_country} onChange={e => update("guest_country", e.target.value)} placeholder="e.g. Greece"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent" />
+            </div>
           </div>
+
+          {/* Reservation Info */}
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider pt-2">Reservation Details</p>
           <div>
             <label className="text-xs font-medium text-muted-foreground mb-1 block">Suite *</label>
             <select value={form.suite_name} onChange={e => update("suite_name", e.target.value)}
@@ -122,16 +182,25 @@ export default function NewReservationDialog({ open, onClose }: Props) {
                 className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent" />
             </div>
           </div>
-          <div>
-            <label className="text-xs font-medium text-muted-foreground mb-1 block">Source</label>
-            <select value={form.source} onChange={e => update("source", e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent">
-              <option>Direct</option>
-              <option>Booking.com</option>
-              <option>Airbnb</option>
-              <option>Expedia</option>
-              <option>Other</option>
-            </select>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Source</label>
+              <select value={form.source} onChange={e => update("source", e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent">
+                <option>Direct</option><option>Booking.com</option><option>Airbnb</option><option>Expedia</option><option>Other</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-xs font-medium text-muted-foreground mb-1 block">Total Price (€) *</label>
+              <input
+                type="number"
+                step="0.01"
+                value={form.custom_total || (suggestedTotal > 0 ? suggestedTotal : "")}
+                onChange={e => update("custom_total", e.target.value)}
+                placeholder="Auto-calculated"
+                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent"
+              />
+            </div>
           </div>
           <div>
             <label className="text-xs font-medium text-muted-foreground mb-1 block">Notes</label>
@@ -139,10 +208,10 @@ export default function NewReservationDialog({ open, onClose }: Props) {
               className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent resize-none" />
           </div>
 
-          {nights > 0 && selectedSuite && (
+          {nights > 0 && selectedSuite && !form.custom_total && (
             <div className="bg-muted/50 rounded-lg p-3 flex items-center justify-between text-sm">
               <span className="text-muted-foreground">{nights} night{nights > 1 ? "s" : ""} × €{selectedSuite.price_per_night}</span>
-              <span className="font-semibold text-foreground">€{totalAmount.toLocaleString()}</span>
+              <span className="font-semibold text-foreground">€{suggestedTotal.toLocaleString()}</span>
             </div>
           )}
 
