@@ -2,14 +2,10 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const villas = [
-  "Villa Azure", "Villa Sunset", "Villa Olive", "Villa Breeze",
-  "Villa Coral", "Villa Luna", "Villa Flora", "Villa Horizon",
-  "Villa Marina", "Villa Terra", "Villa Stella", "Villa Serene",
-];
+const suites = ["Wave I", "Wave II", "Wave III"];
 
 type BookingBlock = {
-  villa: string;
+  suite: string;
   guest: string;
   startDay: number;
   endDay: number;
@@ -17,18 +13,12 @@ type BookingBlock = {
 };
 
 const bookings: BookingBlock[] = [
-  { villa: "Villa Azure", guest: "M. Santos", startDay: 1, endDay: 6, color: "bg-info/70" },
-  { villa: "Villa Azure", guest: "L. Chen", startDay: 10, endDay: 15, color: "bg-success/70" },
-  { villa: "Villa Sunset", guest: "J. Wilson", startDay: 3, endDay: 10, color: "bg-accent/70" },
-  { villa: "Villa Olive", guest: "S. Laurent", startDay: 1, endDay: 4, color: "bg-primary/70" },
-  { villa: "Villa Olive", guest: "P. Dubois", startDay: 7, endDay: 14, color: "bg-info/70" },
-  { villa: "Villa Breeze", guest: "H. Mueller", startDay: 5, endDay: 9, color: "bg-success/70" },
-  { villa: "Villa Coral", guest: "E. Rossi", startDay: 2, endDay: 8, color: "bg-accent/70" },
-  { villa: "Villa Luna", guest: "A. Garcia", startDay: 8, endDay: 15, color: "bg-primary/70" },
-  { villa: "Villa Flora", guest: "K. Tanaka", startDay: 1, endDay: 5, color: "bg-warning/70" },
-  { villa: "Villa Horizon", guest: "R. Brown", startDay: 12, endDay: 16, color: "bg-info/70" },
-  { villa: "Villa Marina", guest: "C. Duval", startDay: 4, endDay: 11, color: "bg-success/70" },
-  { villa: "Villa Stella", guest: "N. Petrov", startDay: 6, endDay: 10, color: "bg-accent/70" },
+  { suite: "Wave I", guest: "M. Santos", startDay: 1, endDay: 8, color: "bg-info/70" },
+  { suite: "Wave I", guest: "L. Chen", startDay: 12, endDay: 18, color: "bg-success/70" },
+  { suite: "Wave II", guest: "J. Wilson", startDay: 5, endDay: 12, color: "bg-accent/70" },
+  { suite: "Wave II", guest: "S. Laurent", startDay: 16, endDay: 22, color: "bg-primary/70" },
+  { suite: "Wave III", guest: "H. Mueller", startDay: 3, endDay: 9, color: "bg-success/70" },
+  { suite: "Wave III", guest: "E. Rossi", startDay: 15, endDay: 21, color: "bg-accent/70" },
 ];
 
 const daysInMonth = 31;
@@ -44,7 +34,7 @@ export default function CalendarPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold font-heading text-foreground">Calendar</h1>
-          <p className="text-sm text-muted-foreground mt-1">Visual villa allocation for {monthName}</p>
+          <p className="text-sm text-muted-foreground mt-1">Suite allocation for {monthName} — 3 Waves Paros</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -69,11 +59,11 @@ export default function CalendarPage() {
         className="glass-card rounded-xl overflow-hidden"
       >
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[900px]">
+          <table className="w-full min-w-[700px]">
             <thead>
               <tr>
-                <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider p-3 w-36 bg-muted/30 border-b border-border sticky left-0">
-                  Villa
+                <th className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider p-3 w-28 bg-muted/30 border-b border-border sticky left-0">
+                  Suite
                 </th>
                 {days.map((day) => {
                   const isWeekend = new Date(2026, 2, day).getDay() % 6 === 0;
@@ -94,15 +84,15 @@ export default function CalendarPage() {
               </tr>
             </thead>
             <tbody>
-              {villas.map((villa) => {
-                const villaBookings = bookings.filter(b => b.villa === villa);
+              {suites.map((suite) => {
+                const suiteBookings = bookings.filter(b => b.suite === suite);
                 return (
-                  <tr key={villa} className="hover:bg-muted/20 transition-colors">
+                  <tr key={suite} className="hover:bg-muted/20 transition-colors">
                     <td className="text-sm font-medium text-foreground p-3 border-b border-border bg-card sticky left-0">
-                      {villa}
+                      {suite}
                     </td>
                     {days.map((day) => {
-                      const booking = villaBookings.find(b => day >= b.startDay && day < b.endDay);
+                      const booking = suiteBookings.find(b => day >= b.startDay && day < b.endDay);
                       const isStart = booking && day === booking.startDay;
                       const isEnd = booking && day === booking.endDay - 1;
                       const isWeekend = new Date(2026, 2, day).getDay() % 6 === 0;
@@ -140,11 +130,10 @@ export default function CalendarPage() {
 
       {/* Legend */}
       <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
-        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-info/70" /> OTA Booking</div>
+        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-info/70" /> Booking.com</div>
         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-success/70" /> Direct Booking</div>
-        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-accent/70" /> Repeat Guest</div>
+        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-accent/70" /> Airbnb</div>
         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-primary/70" /> Travel Agent</div>
-        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-warning/70" /> VIP</div>
       </div>
     </div>
   );

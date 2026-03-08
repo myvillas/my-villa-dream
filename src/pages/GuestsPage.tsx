@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Search, Mail, Phone, Star, MoreHorizontal } from "lucide-react";
+import { Search, Mail, Star, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 
 type Guest = {
@@ -10,19 +10,20 @@ type Guest = {
   totalStays: number;
   totalSpent: string;
   lastVisit: string;
+  lastSuite: string;
   rating: number;
   vip: boolean;
 };
 
 const guests: Guest[] = [
-  { name: "Maria Santos", email: "maria@email.com", phone: "+351 912 345 678", country: "🇵🇹 Portugal", totalStays: 5, totalSpent: "€18,200", lastVisit: "Mar 2026", rating: 5, vip: true },
-  { name: "James Wilson", email: "james@email.com", phone: "+44 7911 123456", country: "🇬🇧 UK", totalStays: 2, totalSpent: "€8,400", lastVisit: "Mar 2026", rating: 4, vip: false },
-  { name: "Sophie Laurent", email: "sophie@email.com", phone: "+33 6 12 34 56 78", country: "🇫🇷 France", totalStays: 3, totalSpent: "€12,600", lastVisit: "Mar 2026", rating: 5, vip: true },
-  { name: "Hans Mueller", email: "hans@email.com", phone: "+49 151 12345678", country: "🇩🇪 Germany", totalStays: 1, totalSpent: "€2,800", lastVisit: "Mar 2026", rating: 4, vip: false },
-  { name: "Elena Rossi", email: "elena@email.com", phone: "+39 333 1234567", country: "🇮🇹 Italy", totalStays: 4, totalSpent: "€15,800", lastVisit: "Mar 2026", rating: 5, vip: true },
-  { name: "Akira Tanaka", email: "akira@email.com", phone: "+81 90 1234 5678", country: "🇯🇵 Japan", totalStays: 1, totalSpent: "€1,950", lastVisit: "Mar 2026", rating: 4, vip: false },
-  { name: "Claire Duval", email: "claire@email.com", phone: "+33 7 12 34 56 78", country: "🇫🇷 France", totalStays: 6, totalSpent: "€22,400", lastVisit: "Mar 2026", rating: 5, vip: true },
-  { name: "Nikolai Petrov", email: "nikolai@email.com", phone: "+7 916 123 4567", country: "🇷🇺 Russia", totalStays: 2, totalSpent: "€6,400", lastVisit: "Mar 2026", rating: 4, vip: false },
+  { name: "Maria Santos", email: "maria@email.com", phone: "+351 912 345 678", country: "🇵🇹 Portugal", totalStays: 3, totalSpent: "€2,700", lastVisit: "Mar 2026", lastSuite: "Wave I", rating: 5, vip: true },
+  { name: "James Wilson", email: "james@email.com", phone: "+44 7911 123456", country: "🇬🇧 UK", totalStays: 1, totalSpent: "€1,540", lastVisit: "Mar 2026", lastSuite: "Wave II", rating: 4, vip: false },
+  { name: "Sophie Laurent", email: "sophie@email.com", phone: "+33 6 12 34 56 78", country: "🇫🇷 France", totalStays: 2, totalSpent: "€2,080", lastVisit: "Mar 2026", lastSuite: "Wave III", rating: 5, vip: true },
+  { name: "Hans Mueller", email: "hans@email.com", phone: "+49 151 12345678", country: "🇩🇪 Germany", totalStays: 1, totalSpent: "€900", lastVisit: "Mar 2026", lastSuite: "Wave I", rating: 4, vip: false },
+  { name: "Elena Rossi", email: "elena@email.com", phone: "+39 333 1234567", country: "🇮🇹 Italy", totalStays: 2, totalSpent: "€2,640", lastVisit: "Mar 2026", lastSuite: "Wave II", rating: 5, vip: true },
+  { name: "Akira Tanaka", email: "akira@email.com", phone: "+81 90 1234 5678", country: "🇯🇵 Japan", totalStays: 1, totalSpent: "€1,560", lastVisit: "Mar 2026", lastSuite: "Wave III", rating: 4, vip: false },
+  { name: "Claire Duval", email: "claire@email.com", phone: "+33 7 12 34 56 78", country: "🇫🇷 France", totalStays: 3, totalSpent: "€3,420", lastVisit: "Mar 2026", lastSuite: "Wave I", rating: 5, vip: true },
+  { name: "Nikolai Petrov", email: "nikolai@email.com", phone: "+7 916 123 4567", country: "🇷🇺 Russia", totalStays: 1, totalSpent: "€880", lastVisit: "Mar 2026", lastSuite: "Wave II", rating: 4, vip: false },
 ];
 
 export default function GuestsPage() {
@@ -60,6 +61,7 @@ export default function GuestsPage() {
                 <th className="p-4">Guest</th>
                 <th className="p-4">Contact</th>
                 <th className="p-4">Country</th>
+                <th className="p-4">Last Suite</th>
                 <th className="p-4">Stays</th>
                 <th className="p-4">Total Spent</th>
                 <th className="p-4">Last Visit</th>
@@ -88,6 +90,7 @@ export default function GuestsPage() {
                     </div>
                   </td>
                   <td className="p-4 text-muted-foreground">{g.country}</td>
+                  <td className="p-4 text-foreground">{g.lastSuite}</td>
                   <td className="p-4 text-foreground font-medium">{g.totalStays}</td>
                   <td className="p-4 font-semibold text-foreground">{g.totalSpent}</td>
                   <td className="p-4 text-muted-foreground">{g.lastVisit}</td>

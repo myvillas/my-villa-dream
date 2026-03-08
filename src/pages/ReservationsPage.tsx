@@ -6,7 +6,7 @@ type Reservation = {
   id: string;
   guest: string;
   email: string;
-  villa: string;
+  suite: string;
   checkIn: string;
   checkOut: string;
   nights: number;
@@ -16,16 +16,14 @@ type Reservation = {
 };
 
 const reservations: Reservation[] = [
-  { id: "R-1042", guest: "Maria Santos", email: "maria@email.com", villa: "Villa Azure", checkIn: "2026-03-10", checkOut: "2026-03-15", nights: 5, total: "€3,750", status: "confirmed", source: "Booking.com" },
-  { id: "R-1041", guest: "James Wilson", email: "james@email.com", villa: "Villa Sunset", checkIn: "2026-03-12", checkOut: "2026-03-19", nights: 7, total: "€5,600", status: "pending", source: "Direct" },
-  { id: "R-1040", guest: "Sophie Laurent", email: "sophie@email.com", villa: "Villa Olive", checkIn: "2026-03-08", checkOut: "2026-03-11", nights: 3, total: "€2,100", status: "checked-in", source: "Airbnb" },
-  { id: "R-1039", guest: "Hans Mueller", email: "hans@email.com", villa: "Villa Breeze", checkIn: "2026-03-15", checkOut: "2026-03-19", nights: 4, total: "€2,800", status: "confirmed", source: "Expedia" },
-  { id: "R-1038", guest: "Elena Rossi", email: "elena@email.com", villa: "Villa Coral", checkIn: "2026-03-09", checkOut: "2026-03-15", nights: 6, total: "€4,200", status: "checked-in", source: "Direct" },
-  { id: "R-1037", guest: "Akira Tanaka", email: "akira@email.com", villa: "Villa Flora", checkIn: "2026-03-05", checkOut: "2026-03-08", nights: 3, total: "€1,950", status: "checked-out", source: "Booking.com" },
-  { id: "R-1036", guest: "Claire Duval", email: "claire@email.com", villa: "Villa Marina", checkIn: "2026-03-04", checkOut: "2026-03-11", nights: 7, total: "€4,900", status: "checked-in", source: "Direct" },
-  { id: "R-1035", guest: "Nikolai Petrov", email: "nikolai@email.com", villa: "Villa Stella", checkIn: "2026-03-06", checkOut: "2026-03-10", nights: 4, total: "€3,200", status: "confirmed", source: "Airbnb" },
-  { id: "R-1034", guest: "Liam O'Brien", email: "liam@email.com", villa: "Villa Horizon", checkIn: "2026-03-20", checkOut: "2026-03-27", nights: 7, total: "€5,250", status: "pending", source: "VRBO" },
-  { id: "R-1033", guest: "Ana Costa", email: "ana@email.com", villa: "Villa Luna", checkIn: "2026-03-01", checkOut: "2026-03-05", nights: 4, total: "€2,400", status: "checked-out", source: "Direct" },
+  { id: "R-1042", guest: "Maria Santos", email: "maria@email.com", suite: "Wave I", checkIn: "2026-03-10", checkOut: "2026-03-15", nights: 5, total: "€900", status: "confirmed", source: "Booking.com" },
+  { id: "R-1041", guest: "James Wilson", email: "james@email.com", suite: "Wave II", checkIn: "2026-03-12", checkOut: "2026-03-19", nights: 7, total: "€1,540", status: "pending", source: "Direct" },
+  { id: "R-1040", guest: "Sophie Laurent", email: "sophie@email.com", suite: "Wave III", checkIn: "2026-03-08", checkOut: "2026-03-12", nights: 4, total: "€1,040", status: "checked-in", source: "Airbnb" },
+  { id: "R-1039", guest: "Hans Mueller", email: "hans@email.com", suite: "Wave I", checkIn: "2026-03-18", checkOut: "2026-03-23", nights: 5, total: "€900", status: "confirmed", source: "Booking.com" },
+  { id: "R-1038", guest: "Elena Rossi", email: "elena@email.com", suite: "Wave II", checkIn: "2026-03-22", checkOut: "2026-03-28", nights: 6, total: "€1,320", status: "pending", source: "Direct" },
+  { id: "R-1037", guest: "Akira Tanaka", email: "akira@email.com", suite: "Wave III", checkIn: "2026-03-15", checkOut: "2026-03-21", nights: 6, total: "€1,560", status: "confirmed", source: "Airbnb" },
+  { id: "R-1036", guest: "Claire Duval", email: "claire@email.com", suite: "Wave I", checkIn: "2026-03-01", checkOut: "2026-03-08", nights: 7, total: "€1,260", status: "checked-out", source: "Direct" },
+  { id: "R-1035", guest: "Nikolai Petrov", email: "nikolai@email.com", suite: "Wave II", checkIn: "2026-03-01", checkOut: "2026-03-05", nights: 4, total: "€880", status: "checked-out", source: "Booking.com" },
 ];
 
 const statusColors: Record<string, string> = {
@@ -45,7 +43,7 @@ export default function ReservationsPage() {
   const filtered = reservations.filter((r) => {
     const matchTab = activeTab === "All" || r.status === activeTab.toLowerCase();
     const matchSearch = r.guest.toLowerCase().includes(search.toLowerCase()) ||
-      r.villa.toLowerCase().includes(search.toLowerCase()) ||
+      r.suite.toLowerCase().includes(search.toLowerCase()) ||
       r.id.toLowerCase().includes(search.toLowerCase());
     return matchTab && matchSearch;
   });
@@ -108,7 +106,7 @@ export default function ReservationsPage() {
               <tr className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider bg-muted/30">
                 <th className="p-4">Reservation</th>
                 <th className="p-4">Guest</th>
-                <th className="p-4">Villa</th>
+                <th className="p-4">Suite</th>
                 <th className="p-4">Check-in</th>
                 <th className="p-4">Check-out</th>
                 <th className="p-4">Nights</th>
@@ -134,7 +132,7 @@ export default function ReservationsPage() {
                       <p className="text-xs text-muted-foreground">{r.email}</p>
                     </div>
                   </td>
-                  <td className="p-4 text-foreground">{r.villa}</td>
+                  <td className="p-4 text-foreground">{r.suite}</td>
                   <td className="p-4 text-muted-foreground">{r.checkIn}</td>
                   <td className="p-4 text-muted-foreground">{r.checkOut}</td>
                   <td className="p-4 text-muted-foreground text-center">{r.nights}</td>

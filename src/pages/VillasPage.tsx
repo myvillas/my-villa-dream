@@ -1,32 +1,61 @@
 import { motion } from "framer-motion";
-import { BedDouble, Users, MapPin, Star, MoreHorizontal } from "lucide-react";
+import { BedDouble, Users, MapPin, Star, MoreHorizontal, Maximize } from "lucide-react";
 
-type Villa = {
+type Suite = {
   name: string;
   location: string;
-  bedrooms: number;
+  size: string;
   maxGuests: number;
   pricePerNight: string;
   status: "available" | "occupied" | "maintenance" | "cleaning";
   rating: number;
   image: string;
+  description: string;
+  amenities: string[];
   currentGuest?: string;
   nextCheckIn?: string;
 };
 
-const villasData: Villa[] = [
-  { name: "Villa Azure", location: "Beachfront", bedrooms: 4, maxGuests: 8, pricePerNight: "€750", status: "occupied", rating: 4.9, image: "🏖️", currentGuest: "Maria Santos", nextCheckIn: "Mar 16" },
-  { name: "Villa Sunset", location: "Hillside", bedrooms: 3, maxGuests: 6, pricePerNight: "€600", status: "available", rating: 4.8, image: "🌅" },
-  { name: "Villa Olive", location: "Garden", bedrooms: 2, maxGuests: 4, pricePerNight: "€450", status: "occupied", rating: 4.7, image: "🫒", currentGuest: "Sophie Laurent" },
-  { name: "Villa Breeze", location: "Beachfront", bedrooms: 3, maxGuests: 6, pricePerNight: "€700", status: "cleaning", rating: 4.9, image: "🌊", nextCheckIn: "Mar 15" },
-  { name: "Villa Coral", location: "Poolside", bedrooms: 5, maxGuests: 10, pricePerNight: "€950", status: "occupied", rating: 4.8, image: "🪸", currentGuest: "Elena Rossi" },
-  { name: "Villa Luna", location: "Hillside", bedrooms: 2, maxGuests: 4, pricePerNight: "€400", status: "available", rating: 4.6, image: "🌙" },
-  { name: "Villa Flora", location: "Garden", bedrooms: 3, maxGuests: 6, pricePerNight: "€550", status: "maintenance", rating: 4.5, image: "🌺" },
-  { name: "Villa Horizon", location: "Beachfront", bedrooms: 4, maxGuests: 8, pricePerNight: "€850", status: "available", rating: 4.9, image: "🌄", nextCheckIn: "Mar 12" },
-  { name: "Villa Marina", location: "Poolside", bedrooms: 3, maxGuests: 6, pricePerNight: "€650", status: "occupied", rating: 4.7, image: "⚓", currentGuest: "Claire Duval" },
-  { name: "Villa Terra", location: "Garden", bedrooms: 2, maxGuests: 4, pricePerNight: "€380", status: "available", rating: 4.6, image: "🌿" },
-  { name: "Villa Stella", location: "Hillside", bedrooms: 4, maxGuests: 8, pricePerNight: "€800", status: "occupied", rating: 4.8, image: "⭐", currentGuest: "Nikolai Petrov" },
-  { name: "Villa Serene", location: "Beachfront", bedrooms: 5, maxGuests: 10, pricePerNight: "€1,100", status: "available", rating: 4.9, image: "🏝️" },
+const suitesData: Suite[] = [
+  {
+    name: "Wave I",
+    location: "Krotiri Hillside, Parikia",
+    size: "27 m²",
+    maxGuests: 2,
+    pricePerNight: "€180",
+    status: "occupied",
+    rating: 4.9,
+    image: "🏖️",
+    description: "Bright and elegant sea view room with minimalist Cycladic design and a private balcony overlooking the Aegean.",
+    amenities: ["King-size bed", "Harbor view", "Private balcony", "Nespresso", "Rain shower"],
+    currentGuest: "Maria Santos",
+  },
+  {
+    name: "Wave II",
+    location: "Krotiri Hillside, Parikia",
+    size: "30 m²",
+    maxGuests: 2,
+    pricePerNight: "€220",
+    status: "available",
+    rating: 4.9,
+    image: "🌅",
+    description: "Spacious studio with a kitchenette, natural textures, and large openings with panoramic sea views.",
+    amenities: ["King-size bed", "Panoramic sea view", "Large terrace", "Nespresso", "Outdoor shower"],
+    nextCheckIn: "Mar 12",
+  },
+  {
+    name: "Wave III",
+    location: "Krotiri Hillside, Parikia",
+    size: "35 m²",
+    maxGuests: 2,
+    pricePerNight: "€260",
+    status: "cleaning",
+    rating: 4.9,
+    image: "🌊",
+    description: "Expansive west-facing suite with enhanced privacy, generous space, and an outdoor bathtub for sunset moments.",
+    amenities: ["King-size bed", "Sunset harbor view", "Private terrace", "Nespresso", "Outdoor bathtub"],
+    nextCheckIn: "Mar 15",
+  },
 ];
 
 const statusConfig: Record<string, { label: string; class: string }> = {
@@ -38,22 +67,22 @@ const statusConfig: Record<string, { label: string; class: string }> = {
 
 export default function VillasPage() {
   const stats = {
-    available: villasData.filter(v => v.status === "available").length,
-    occupied: villasData.filter(v => v.status === "occupied").length,
-    maintenance: villasData.filter(v => v.status === "maintenance").length,
-    cleaning: villasData.filter(v => v.status === "cleaning").length,
+    available: suitesData.filter(v => v.status === "available").length,
+    occupied: suitesData.filter(v => v.status === "occupied").length,
+    maintenance: suitesData.filter(v => v.status === "maintenance").length,
+    cleaning: suitesData.filter(v => v.status === "cleaning").length,
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold font-heading text-foreground">Villas</h1>
-        <p className="text-sm text-muted-foreground mt-1">Manage your {villasData.length} properties</p>
+        <h1 className="text-2xl font-bold font-heading text-foreground">Suites</h1>
+        <p className="text-sm text-muted-foreground mt-1">3 Waves Paros — {suitesData.length} sea view suites in Parikia</p>
       </div>
 
       {/* Quick stats */}
       <div className="flex flex-wrap gap-3">
-        {Object.entries(stats).map(([key, count]) => (
+        {Object.entries(stats).filter(([_, count]) => count > 0).map(([key, count]) => (
           <div key={key} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-card border border-border text-xs">
             <div className={`w-2 h-2 rounded-full ${statusConfig[key].class.split(" ")[0]}`} />
             <span className="capitalize text-muted-foreground">{key}:</span>
@@ -64,9 +93,9 @@ export default function VillasPage() {
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {villasData.map((villa, i) => (
+        {suitesData.map((suite, i) => (
           <motion.div
-            key={villa.name}
+            key={suite.name}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
@@ -75,11 +104,11 @@ export default function VillasPage() {
             {/* Header */}
             <div className="stat-gradient p-4 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <span className="text-2xl">{villa.image}</span>
+                <span className="text-2xl">{suite.image}</span>
                 <div>
-                  <h3 className="font-heading font-semibold text-primary-foreground">{villa.name}</h3>
+                  <h3 className="font-heading font-semibold text-primary-foreground">{suite.name}</h3>
                   <div className="flex items-center gap-1 text-xs text-primary-foreground/70">
-                    <MapPin className="w-3 h-3" /> {villa.location}
+                    <MapPin className="w-3 h-3" /> {suite.location}
                   </div>
                 </div>
               </div>
@@ -91,36 +120,45 @@ export default function VillasPage() {
             {/* Body */}
             <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${statusConfig[villa.status].class}`}>
-                  {statusConfig[villa.status].label}
+                <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${statusConfig[suite.status].class}`}>
+                  {statusConfig[suite.status].label}
                 </span>
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Star className="w-3 h-3 fill-accent text-accent" /> {villa.rating}
+                  <Star className="w-3 h-3 fill-accent text-accent" /> {suite.rating}
                 </div>
               </div>
+
+              <p className="text-xs text-muted-foreground leading-relaxed">{suite.description}</p>
 
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
-                  <BedDouble className="w-3.5 h-3.5" /> {villa.bedrooms} bed
+                  <Maximize className="w-3.5 h-3.5" /> {suite.size}
                 </div>
                 <div className="flex items-center gap-1">
-                  <Users className="w-3.5 h-3.5" /> {villa.maxGuests} guests
+                  <Users className="w-3.5 h-3.5" /> {suite.maxGuests} guests
                 </div>
                 <div className="ml-auto font-semibold text-foreground text-sm">
-                  {villa.pricePerNight}<span className="text-xs font-normal text-muted-foreground">/night</span>
+                  {suite.pricePerNight}<span className="text-xs font-normal text-muted-foreground">/night</span>
                 </div>
               </div>
 
-              {villa.currentGuest && (
+              {/* Amenities */}
+              <div className="flex flex-wrap gap-1.5">
+                {suite.amenities.map(a => (
+                  <span key={a} className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{a}</span>
+                ))}
+              </div>
+
+              {suite.currentGuest && (
                 <div className="text-xs bg-muted/50 rounded-lg p-2">
                   <span className="text-muted-foreground">Current:</span>{" "}
-                  <span className="font-medium text-foreground">{villa.currentGuest}</span>
+                  <span className="font-medium text-foreground">{suite.currentGuest}</span>
                 </div>
               )}
-              {villa.nextCheckIn && !villa.currentGuest && (
+              {suite.nextCheckIn && !suite.currentGuest && (
                 <div className="text-xs bg-muted/50 rounded-lg p-2">
                   <span className="text-muted-foreground">Next check-in:</span>{" "}
-                  <span className="font-medium text-foreground">{villa.nextCheckIn}</span>
+                  <span className="font-medium text-foreground">{suite.nextCheckIn}</span>
                 </div>
               )}
             </div>
