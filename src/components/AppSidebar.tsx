@@ -18,7 +18,7 @@ const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
   { icon: CalendarDays, label: "Calendar", path: "/calendar" },
   { icon: BookOpen, label: "Reservations", path: "/reservations" },
-  { icon: Home, label: "Villas", path: "/villas" },
+  { icon: Home, label: "Suites", path: "/villas" },
   { icon: Users, label: "Guests", path: "/guests" },
   { icon: BarChart3, label: "Reports", path: "/reports" },
   { icon: Settings, label: "Settings", path: "/settings" },
