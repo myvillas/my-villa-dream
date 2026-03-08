@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
-import { X, Trash2, Users, BedDouble, Receipt, CreditCard, FileText, Clock, Mail } from "lucide-react";
+import { X, Trash2, Users, BedDouble, Receipt, CreditCard, FileText, Clock, Mail, Plus } from "lucide-react";
 import { useUpdateReservation, useDeleteReservation, type Reservation } from "@/hooks/use-reservations";
+import { usePayments, useCreatePayment, useDeletePayment } from "@/hooks/use-payments";
 import { useSuites } from "@/hooks/use-suites";
 import { toast } from "sonner";
 
@@ -29,11 +30,16 @@ const detailTabs = ["Accommodations", "Guests", "Charges", "Payments", "Log"];
 
 export default function ReservationDetailDialog({ reservation, onClose }: Props) {
   const { data: suites } = useSuites();
+  const { data: payments = [] } = usePayments(reservation?.id);
+  const createPayment = useCreatePayment();
+  const deletePayment = useDeletePayment();
   const updateReservation = useUpdateReservation();
   const deleteReservation = useDeleteReservation();
   const [activeTab, setActiveTab] = useState("Accommodations");
   const [editing, setEditing] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [paymentForm, setPaymentForm] = useState({ amount: "", method: "cash", reference: "", notes: "" });
 
   const [form, setForm] = useState({
     guest_name: "", guest_email: "", guest_phone: "", guest_country_flag: "",
@@ -487,10 +493,143 @@ export default function ReservationDetailDialog({ reservation, onClose }: Props)
 
           {activeTab === "Payments" && (
             <div className="space-y-4">
-              <div className="text-center py-8">
-                <CreditCard className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">No payments recorded yet</p>
-                <p className="text-xs text-muted-foreground mt-1">Balance due: <span className="font-semibold text-destructive">€{Number(reservation.balance || 0).toLocaleString()}</span></p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Payment History</p>
+                <button onClick={() => { setShowPaymentForm(true); setPaymentForm({ amount: "", method: "cash", reference: "", notes: "" }); }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg accent-gradient text-accent-foreground text-xs font-medium hover:opacity-90 transition-opacity">
+                  <Plus className="w-3 h-3" /> Add Payment
+                </button>
+              </div>
+
+              {showPaymentForm && (
+                <div className="border border-border rounded-lg p-4 bg-muted/20 space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-1 block">Amount (€) *</label>
+                      <input type="number" step="0.01" value={paymentForm.amount} onChange={e => setPaymentForm(p => ({ ...p, amount: e.target.value }))}
+                        placeholder={String(Number(reservation.balance || 0))}
+                        className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-1 block">Method</label>
+                      <select value={paymentForm.method} onChange={e => setPaymentForm(p => ({ ...p, method: e.target.value }))}
+                        className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent">
+                        <option value="cash">Cash</option>
+                        <option value="card">Card</option>
+                        <option value="bank_transfer">Bank Transfer</option>
+                        <option value="online">Online (Stripe/PayPal)</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-1 block">Reference</label>
+                      <input value={paymentForm.reference} onChange={e => setPaymentForm(p => ({ ...p, reference: e.target.value }))}
+                        placeholder="Transaction ID..."
+                        className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent" />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground mb-1 block">Notes</label>
+                      <input value={paymentForm.notes} onChange={e => setPaymentForm(p => ({ ...p, notes: e.target.value }))}
+                        className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent" />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => setShowPaymentForm(false)}
+                      className="px-3 py-1.5 rounded-lg border border-border text-xs font-medium text-muted-foreground hover:bg-muted transition-colors">Cancel</button>
+                    <button disabled={createPayment.isPending || !paymentForm.amount}
+                      onClick={async () => {
+                        const amount = parseFloat(paymentForm.amount);
+                        if (!amount || amount <= 0) { toast.error("Enter a valid amount"); return; }
+                        try {
+                          await createPayment.mutateAsync({
+                            reservation_id: reservation.id,
+                            amount,
+                            method: paymentForm.method,
+                            reference: paymentForm.reference || undefined,
+                            notes: paymentForm.notes || undefined,
+                          });
+                          // Update balance on reservation
+                          const newBalance = Math.max(0, Number(reservation.balance || 0) - amount);
+                          await updateReservation.mutateAsync({ id: reservation.id, balance: newBalance });
+                          toast.success(`Payment of €${amount.toLocaleString()} recorded`);
+                          setShowPaymentForm(false);
+                        } catch (err: any) { toast.error(err.message || "Failed to record payment"); }
+                      }}
+                      className="px-3 py-1.5 rounded-lg accent-gradient text-accent-foreground text-xs font-medium hover:opacity-90 transition-opacity disabled:opacity-50">
+                      {createPayment.isPending ? "Saving..." : "Record Payment"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {payments.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-xs font-medium text-muted-foreground uppercase tracking-wider bg-muted/30">
+                        <th className="p-3">Date</th>
+                        <th className="p-3">Method</th>
+                        <th className="p-3">Reference</th>
+                        <th className="p-3 text-right">Amount</th>
+                        <th className="p-3"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {payments.map(p => (
+                        <tr key={p.id} className="border-t border-border/50">
+                          <td className="p-3 text-muted-foreground">{new Date(p.payment_date).toLocaleDateString("en-GB")}</td>
+                          <td className="p-3"><span className="text-xs px-2 py-0.5 rounded-full bg-muted text-foreground capitalize">{p.method.replace("_", " ")}</span></td>
+                          <td className="p-3 text-muted-foreground text-xs">{p.reference || "—"}</td>
+                          <td className="p-3 text-right font-semibold text-success">€{Number(p.amount).toLocaleString()}</td>
+                          <td className="p-3">
+                            <button onClick={async () => {
+                              try {
+                                await deletePayment.mutateAsync({ id: p.id, reservationId: reservation.id });
+                                const newBalance = Number(reservation.balance || 0) + Number(p.amount);
+                                await updateReservation.mutateAsync({ id: reservation.id, balance: newBalance });
+                                toast.success("Payment removed");
+                              } catch (err: any) { toast.error("Failed to delete payment"); }
+                            }} className="p-1 rounded hover:bg-destructive/10 transition-colors">
+                              <Trash2 className="w-3 h-3 text-destructive" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr className="border-t border-border font-semibold">
+                        <td className="p-3 text-foreground" colSpan={3}>Total Paid</td>
+                        <td className="p-3 text-right text-success">€{payments.reduce((s, p) => s + Number(p.amount), 0).toLocaleString()}</td>
+                        <td></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              ) : !showPaymentForm && (
+                <div className="text-center py-8">
+                  <CreditCard className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">No payments recorded yet</p>
+                </div>
+              )}
+
+              {/* Balance summary */}
+              <div className="bg-muted/30 rounded-lg p-3 flex items-center justify-between text-xs">
+                <div>
+                  <span className="text-muted-foreground uppercase tracking-wider">Total Charged</span>
+                  <p className="font-bold text-foreground text-base">€{Number(reservation.total_amount).toLocaleString()}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground uppercase tracking-wider">Paid</span>
+                  <p className="font-bold text-success text-base">€{payments.reduce((s, p) => s + Number(p.amount), 0).toLocaleString()}</p>
+                </div>
+                <div>
+                  <span className="text-muted-foreground uppercase tracking-wider">Balance Due</span>
+                  <p className={`font-bold text-base ${Number(reservation.balance) > 0 ? "text-destructive" : "text-success"}`}>
+                    €{Number(reservation.balance || 0).toLocaleString()}
+                  </p>
+                </div>
               </div>
             </div>
           )}
