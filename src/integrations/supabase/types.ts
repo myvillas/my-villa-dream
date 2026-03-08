@@ -14,7 +14,183 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      guests: {
+        Row: {
+          country: string | null
+          country_flag: string | null
+          created_at: string
+          email: string
+          id: string
+          last_suite: string | null
+          last_visit: string | null
+          name: string
+          phone: string | null
+          rating: number | null
+          total_spent: number | null
+          total_stays: number | null
+          updated_at: string
+          vip: boolean | null
+        }
+        Insert: {
+          country?: string | null
+          country_flag?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          last_suite?: string | null
+          last_visit?: string | null
+          name: string
+          phone?: string | null
+          rating?: number | null
+          total_spent?: number | null
+          total_stays?: number | null
+          updated_at?: string
+          vip?: boolean | null
+        }
+        Update: {
+          country?: string | null
+          country_flag?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          last_suite?: string | null
+          last_visit?: string | null
+          name?: string
+          phone?: string | null
+          rating?: number | null
+          total_spent?: number | null
+          total_stays?: number | null
+          updated_at?: string
+          vip?: boolean | null
+        }
+        Relationships: []
+      }
+      reservations: {
+        Row: {
+          check_in: string
+          check_out: string
+          created_at: string
+          guest_email: string
+          guest_id: string | null
+          guest_name: string
+          id: string
+          nights: number
+          notes: string | null
+          reservation_code: string
+          source: string | null
+          status: string
+          suite_id: string | null
+          suite_name: string
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          check_in: string
+          check_out: string
+          created_at?: string
+          guest_email: string
+          guest_id?: string | null
+          guest_name: string
+          id?: string
+          nights: number
+          notes?: string | null
+          reservation_code: string
+          source?: string | null
+          status?: string
+          suite_id?: string | null
+          suite_name: string
+          total_amount: number
+          updated_at?: string
+        }
+        Update: {
+          check_in?: string
+          check_out?: string
+          created_at?: string
+          guest_email?: string
+          guest_id?: string | null
+          guest_name?: string
+          id?: string
+          nights?: number
+          notes?: string | null
+          reservation_code?: string
+          source?: string | null
+          status?: string
+          suite_id?: string | null
+          suite_name?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_guest_id_fkey"
+            columns: ["guest_id"]
+            isOneToOne: false
+            referencedRelation: "guests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_suite_id_fkey"
+            columns: ["suite_id"]
+            isOneToOne: false
+            referencedRelation: "suites"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      suites: {
+        Row: {
+          amenities: string[] | null
+          created_at: string
+          current_guest: string | null
+          description: string | null
+          emoji: string | null
+          id: string
+          location: string
+          max_guests: number
+          name: string
+          next_check_in: string | null
+          price_per_night: number
+          rating: number | null
+          size: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amenities?: string[] | null
+          created_at?: string
+          current_guest?: string | null
+          description?: string | null
+          emoji?: string | null
+          id?: string
+          location?: string
+          max_guests?: number
+          name: string
+          next_check_in?: string | null
+          price_per_night: number
+          rating?: number | null
+          size: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amenities?: string[] | null
+          created_at?: string
+          current_guest?: string | null
+          description?: string | null
+          emoji?: string | null
+          id?: string
+          location?: string
+          max_guests?: number
+          name?: string
+          next_check_in?: string | null
+          price_per_night?: number
+          rating?: number | null
+          size?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
