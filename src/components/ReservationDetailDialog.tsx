@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { X, Trash2 } from "lucide-react";
 import { useUpdateReservation, useDeleteReservation, type Reservation } from "@/hooks/use-reservations";
 import { useSuites } from "@/hooks/use-suites";
 import { toast } from "sonner";
-import { Trash2 } from "lucide-react";
 
 interface Props {
   reservation: Reservation | null;
@@ -36,6 +35,7 @@ export default function ReservationDetailDialog({ reservation, onClose }: Props)
     source: "",
     notes: "",
     status: "",
+    custom_total: "",
   });
 
   useEffect(() => {
@@ -49,6 +49,7 @@ export default function ReservationDetailDialog({ reservation, onClose }: Props)
         source: reservation.source || "Direct",
         notes: reservation.notes || "",
         status: reservation.status,
+        custom_total: String(reservation.total_amount),
       });
       setEditing(false);
       setConfirmDelete(false);
@@ -62,7 +63,8 @@ export default function ReservationDetailDialog({ reservation, onClose }: Props)
     : reservation.nights;
 
   const selectedSuite = suites?.find(s => s.name === form.suite_name);
-  const totalAmount = selectedSuite ? nights * selectedSuite.price_per_night : Number(reservation.total_amount);
+  const suggestedTotal = selectedSuite ? nights * selectedSuite.price_per_night : 0;
+  const totalAmount = form.custom_total ? parseFloat(form.custom_total) : suggestedTotal;
 
   const update = (key: string, value: string) => setForm(prev => ({ ...prev, [key]: value }));
 
@@ -79,6 +81,10 @@ export default function ReservationDetailDialog({ reservation, onClose }: Props)
   const handleSaveEdit = async () => {
     if (!form.guest_name || !form.guest_email || !form.suite_name || !form.check_in || !form.check_out) {
       toast.error("Please fill in all required fields");
+      return;
+    }
+    if (totalAmount <= 0) {
+      toast.error("Please enter a valid total amount");
       return;
     }
     try {
@@ -135,15 +141,14 @@ export default function ReservationDetailDialog({ reservation, onClose }: Props)
 
         <div className="p-5 space-y-4">
           {editing ? (
-            /* Edit Mode */
             <>
               <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-2 sm:col-span-1">
+                <div>
                   <label className="text-xs font-medium text-muted-foreground mb-1 block">Guest Name *</label>
                   <input value={form.guest_name} onChange={e => update("guest_name", e.target.value)}
                     className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent" />
                 </div>
-                <div className="col-span-2 sm:col-span-1">
+                <div>
                   <label className="text-xs font-medium text-muted-foreground mb-1 block">Guest Email *</label>
                   <input type="email" value={form.guest_email} onChange={e => update("guest_email", e.target.value)}
                     className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent" />
@@ -170,12 +175,19 @@ export default function ReservationDetailDialog({ reservation, onClose }: Props)
                     className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent" />
                 </div>
               </div>
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Source</label>
-                <select value={form.source} onChange={e => update("source", e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent">
-                  <option>Direct</option><option>Booking.com</option><option>Airbnb</option><option>Expedia</option><option>Other</option>
-                </select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Source</label>
+                  <select value={form.source} onChange={e => update("source", e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent">
+                    <option>Direct</option><option>Booking.com</option><option>Airbnb</option><option>Expedia</option><option>Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Total Price (€) *</label>
+                  <input type="number" step="0.01" value={form.custom_total} onChange={e => update("custom_total", e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm text-foreground outline-none focus:ring-1 focus:ring-accent" />
+                </div>
               </div>
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1 block">Notes</label>
@@ -185,8 +197,7 @@ export default function ReservationDetailDialog({ reservation, onClose }: Props)
 
               {nights > 0 && selectedSuite && (
                 <div className="bg-muted/50 rounded-lg p-3 flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">{nights} night{nights > 1 ? "s" : ""} × €{selectedSuite.price_per_night}</span>
-                  <span className="font-semibold text-foreground">€{totalAmount.toLocaleString()}</span>
+                  <span className="text-muted-foreground">Suggested: {nights} night{nights > 1 ? "s" : ""} × €{selectedSuite.price_per_night} = €{suggestedTotal.toLocaleString()}</span>
                 </div>
               )}
 
@@ -202,13 +213,12 @@ export default function ReservationDetailDialog({ reservation, onClose }: Props)
               </div>
             </>
           ) : (
-            /* View Mode */
             <>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <p className="text-xs text-muted-foreground">Guest</p>
-                  <p className="font-medium text-foreground">{form.guest_name || reservation.guest_name}</p>
-                  <p className="text-xs text-muted-foreground">{form.guest_email || reservation.guest_email}</p>
+                  <p className="font-medium text-foreground">{reservation.guest_name}</p>
+                  <p className="text-xs text-muted-foreground">{reservation.guest_email}</p>
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground">Total</p>
