@@ -67,15 +67,26 @@ export type Database = {
       }
       reservations: {
         Row: {
+          balance: number | null
+          booking_date: string | null
           check_in: string
+          check_in_time: string | null
           check_out: string
+          check_out_time: string | null
           created_at: string
+          guest_country: string | null
+          guest_country_flag: string | null
           guest_email: string
           guest_id: string | null
           guest_name: string
+          guest_phone: string | null
           id: string
+          invoice_status: string | null
           nights: number
           notes: string | null
+          occupants_adults: number | null
+          occupants_children: number | null
+          rate_name: string | null
           reservation_code: string
           source: string | null
           status: string
@@ -85,15 +96,26 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          balance?: number | null
+          booking_date?: string | null
           check_in: string
+          check_in_time?: string | null
           check_out: string
+          check_out_time?: string | null
           created_at?: string
+          guest_country?: string | null
+          guest_country_flag?: string | null
           guest_email: string
           guest_id?: string | null
           guest_name: string
+          guest_phone?: string | null
           id?: string
+          invoice_status?: string | null
           nights: number
           notes?: string | null
+          occupants_adults?: number | null
+          occupants_children?: number | null
+          rate_name?: string | null
           reservation_code: string
           source?: string | null
           status?: string
@@ -103,15 +125,26 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          balance?: number | null
+          booking_date?: string | null
           check_in?: string
+          check_in_time?: string | null
           check_out?: string
+          check_out_time?: string | null
           created_at?: string
+          guest_country?: string | null
+          guest_country_flag?: string | null
           guest_email?: string
           guest_id?: string | null
           guest_name?: string
+          guest_phone?: string | null
           id?: string
+          invoice_status?: string | null
           nights?: number
           notes?: string | null
+          occupants_adults?: number | null
+          occupants_children?: number | null
+          rate_name?: string | null
           reservation_code?: string
           source?: string | null
           status?: string
