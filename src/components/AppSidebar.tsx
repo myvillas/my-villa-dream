@@ -12,13 +12,16 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  ClipboardList,
 } from "lucide-react";
+import { useSuites } from "@/hooks/use-suites";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
   { icon: CalendarDays, label: "Calendar", path: "/calendar" },
   { icon: BookOpen, label: "Reservations", path: "/reservations" },
   { icon: Home, label: "Suites", path: "/villas" },
+  { icon: ClipboardList, label: "Housekeeping", path: "/housekeeping" },
   { icon: Users, label: "Guests", path: "/guests" },
   { icon: BarChart3, label: "Reports", path: "/reports" },
   { icon: Settings, label: "Settings", path: "/settings" },
@@ -27,6 +30,8 @@ const navItems = [
 export default function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const { data: suites = [] } = useSuites();
+  const activeSuites = suites.filter(s => s.status === "occupied").length;
 
   return (
     <motion.aside
@@ -115,8 +120,8 @@ export default function AppSidebar() {
           <AnimatePresence>
             {!collapsed && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                <p className="text-xs text-sidebar-foreground/50">Active Suites</p>
-                <p className="text-lg font-bold text-sidebar-primary">3</p>
+                <p className="text-xs text-sidebar-foreground/50">Occupied Suites</p>
+                <p className="text-lg font-bold text-sidebar-primary">{activeSuites} / {suites.length}</p>
               </motion.div>
             )}
           </AnimatePresence>

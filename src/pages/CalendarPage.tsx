@@ -1,8 +1,11 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Users } from "lucide-react";
+import { ChevronLeft, ChevronRight, Users, Plus } from "lucide-react";
 import { useReservations } from "@/hooks/use-reservations";
 import { useSuites } from "@/hooks/use-suites";
+import NewReservationDialog from "@/components/NewReservationDialog";
+import ReservationDetailDialog from "@/components/ReservationDetailDialog";
+import type { Reservation } from "@/hooks/use-reservations";
 
 const sourceColors: Record<string, string> = {
   "Booking.com": "bg-info",
@@ -27,6 +30,19 @@ export default function CalendarPage() {
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [startDay, setStartDay] = useState(1);
   const visibleDays = 16;
+
+  const [newOpen, setNewOpen] = useState(false);
+  const [newInitialSuite, setNewInitialSuite] = useState("");
+  const [newInitialDate, setNewInitialDate] = useState("");
+  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
+
+  const openNewReservation = (suiteName: string, day: number) => {
+    const month = String(currentMonth + 1).padStart(2, "0");
+    const dayStr = String(day).padStart(2, "0");
+    setNewInitialSuite(suiteName);
+    setNewInitialDate(`${currentYear}-${month}-${dayStr}`);
+    setNewOpen(true);
+  };
 
   const daysInMonth = getDaysInMonth(currentYear, currentMonth);
   const days = Array.from({ length: visibleDays }, (_, i) => startDay + i).filter(d => d <= daysInMonth);
@@ -156,6 +172,11 @@ export default function CalendarPage() {
                     </td>
                     {days.map((day) => {
                       const booking = suiteBookings.find(b => day >= b.startDay && day < b.endDay);
+                      const reservationObj = booking ? reservations.find(r =>
+                        r.suite_name === suite &&
+                        day >= new Date(r.check_in).getDate() &&
+                        day < new Date(r.check_out).getDate()
+                      ) ?? null : null;
                       const isStart = booking && day === Math.max(booking.startDay, days[0]);
                       const isWeekend = new Date(currentYear, currentMonth, day).getDay() % 6 === 0;
 
@@ -171,13 +192,17 @@ export default function CalendarPage() {
                         <td
                           key={day}
                           colSpan={isStart && span > 1 ? span : 1}
-                          className={`border-b border-l border-border p-0.5 h-16 relative ${isWeekend && !booking ? "bg-muted/20" : ""}`}
+                          className={`border-b border-l border-border p-0.5 h-16 relative group/cell ${isWeekend && !booking ? "bg-muted/20" : ""}`}
+                          onClick={() => !booking && openNewReservation(suite, day)}
                         >
-                          {booking && isStart && (
-                            <div className={`${booking.color} rounded-md mx-0.5 h-full flex flex-col justify-between p-1.5 text-primary-foreground cursor-pointer hover:opacity-90 transition-opacity`}>
+                          {booking && isStart ? (
+                            <div
+                              className={`${booking.color} rounded-md mx-0.5 h-full flex flex-col justify-between p-1.5 text-primary-foreground cursor-pointer hover:opacity-90 transition-opacity`}
+                              onClick={e => { e.stopPropagation(); if (reservationObj) setSelectedReservation(reservationObj); }}
+                            >
                               <div className="flex items-center gap-1">
                                 <span className="text-[9px] font-semibold bg-primary-foreground/20 rounded px-1">
-                                  {booking.source === "Booking.com" ? "B" : booking.source === "Airbnb" ? "A" : "D"}
+                                  {booking.source === "Booking.com" ? "B" : booking.source === "Airbnb" ? "A" : booking.source === "Expedia" ? "E" : "D"}
                                 </span>
                                 {booking.flag && <span className="text-[10px]">{booking.flag}</span>}
                                 <span className="text-[10px] font-medium truncate">{booking.guestShort}</span>
@@ -190,7 +215,11 @@ export default function CalendarPage() {
                                 <span className="text-[9px] font-semibold">{booking.balance}/{booking.price}</span>
                               </div>
                             </div>
-                          )}
+                          ) : !booking ? (
+                            <div className="w-full h-full flex items-center justify-center opacity-0 group-hover/cell:opacity-100 transition-opacity cursor-pointer">
+                              <Plus className="w-4 h-4 text-muted-foreground/60" />
+                            </div>
+                          ) : null}
                         </td>
                       );
                     })}
@@ -207,8 +236,20 @@ export default function CalendarPage() {
         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-info" /> Booking.com</div>
         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-success" /> Direct Booking</div>
         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-accent" /> Airbnb</div>
-        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-primary" /> Travel Agent</div>
+        <div className="flex items-center gap-2"><div className="w-3 h-3 rounded bg-primary" /> Expedia</div>
+        <div className="flex items-center gap-2 ml-auto text-muted-foreground/60 italic">Click empty cell to add booking</div>
       </div>
+
+      <NewReservationDialog
+        open={newOpen}
+        onClose={() => setNewOpen(false)}
+        initialSuite={newInitialSuite}
+        initialCheckIn={newInitialDate}
+      />
+      <ReservationDetailDialog
+        reservation={selectedReservation}
+        onClose={() => setSelectedReservation(null)}
+      />
     </div>
   );
 }
