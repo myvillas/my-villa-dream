@@ -80,6 +80,7 @@ export default function CalendarPage() {
       }
 
       return {
+        id: r.id,
         suite: r.suite_name,
         guest: r.guest_name,
         guestShort: r.guest_name.length > 14 ? r.guest_name.substring(0, 14) + "…" : r.guest_name,
@@ -172,11 +173,9 @@ export default function CalendarPage() {
                     </td>
                     {days.map((day) => {
                       const booking = suiteBookings.find(b => day >= b.startDay && day < b.endDay);
-                      const reservationObj = booking ? reservations.find(r =>
-                        r.suite_name === suite &&
-                        day >= new Date(r.check_in).getDate() &&
-                        day < new Date(r.check_out).getDate()
-                      ) ?? null : null;
+                      const reservationObj = booking
+                        ? (reservations.find(r => r.id === booking.id) ?? null)
+                        : null;
                       const isStart = booking && day === Math.max(booking.startDay, days[0]);
                       const isWeekend = new Date(currentYear, currentMonth, day).getDay() % 6 === 0;
 
@@ -192,7 +191,7 @@ export default function CalendarPage() {
                         <td
                           key={day}
                           colSpan={isStart && span > 1 ? span : 1}
-                          className={`border-b border-l border-border p-0.5 h-16 relative group/cell ${isWeekend && !booking ? "bg-muted/20" : ""}`}
+                          className={`border-b border-l border-border p-0.5 h-16 relative group ${isWeekend && !booking ? "bg-muted/20" : ""}`}
                           onClick={() => !booking && openNewReservation(suite, day)}
                         >
                           {booking && isStart ? (
@@ -216,7 +215,7 @@ export default function CalendarPage() {
                               </div>
                             </div>
                           ) : !booking ? (
-                            <div className="w-full h-full flex items-center justify-center opacity-0 group-hover/cell:opacity-100 transition-opacity cursor-pointer">
+                            <div className="w-full h-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                               <Plus className="w-4 h-4 text-muted-foreground/60" />
                             </div>
                           ) : null}
