@@ -16,12 +16,12 @@ import {
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
-  { icon: CalendarDays, label: "Calendar", path: "/calendar" },
-  { icon: BookOpen, label: "Reservations", path: "/reservations" },
-  { icon: Home, label: "Suites", path: "/villas" },
-  { icon: Users, label: "Guests", path: "/guests" },
-  { icon: BarChart3, label: "Reports", path: "/reports" },
-  { icon: Settings, label: "Settings", path: "/settings" },
+  { icon: CalendarDays, label: "Ημερολόγιο", path: "/calendar" },
+  { icon: BookOpen, label: "Κρατήσεις", path: "/reservations" },
+  { icon: Home, label: "Δωμάτια", path: "/villas" },
+  { icon: Users, label: "Πελάτες", path: "/guests" },
+  { icon: BarChart3, label: "Αναφορές", path: "/reports" },
+  { icon: Settings, label: "Ρυθμίσεις", path: "/settings" },
 ];
 
 export default function AppSidebar() {
