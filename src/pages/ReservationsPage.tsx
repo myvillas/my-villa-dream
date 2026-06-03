@@ -1,10 +1,13 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { Search, Plus, Phone, Mail } from "lucide-react";
+import { Search, Plus, Phone, Mail, Upload } from "lucide-react";
 import { useReservations } from "@/hooks/use-reservations";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import NewReservationDialog from "@/components/NewReservationDialog";
 import ReservationDetailDialog from "@/components/ReservationDetailDialog";
 import type { Reservation } from "@/hooks/use-reservations";
+import { BOOKING_COM_RESERVATIONS } from "@/data/booking-import";
 
 const statusColors: Record<string, string> = {
   confirmed: "bg-success/10 text-success",
@@ -41,10 +44,33 @@ const tabStatuses: Record<string, string> = {
 
 export default function ReservationsPage() {
   const { data: reservations = [], isLoading } = useReservations();
+  const queryClient = useQueryClient();
   const [activeTab, setActiveTab] = useState("Όλες");
   const [search, setSearch] = useState("");
   const [newOpen, setNewOpen] = useState(false);
   const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
+  const [importing, setImporting] = useState(false);
+
+  async function handleImport() {
+    if (!confirm(`Εισαγωγή ${BOOKING_COM_RESERVATIONS.length} κρατήσεων από Booking.com;`)) return;
+    setImporting(true);
+    try {
+      const existing = new Set(reservations.map((r) => r.reservation_code));
+      const toInsert = BOOKING_COM_RESERVATIONS.filter((r) => !existing.has(r.reservation_code));
+      if (toInsert.length === 0) {
+        alert("Όλες οι κρατήσεις υπάρχουν ήδη.");
+        return;
+      }
+      const { error } = await supabase.from("reservations").insert(toInsert);
+      if (error) throw error;
+      await queryClient.invalidateQueries({ queryKey: ["reservations"] });
+      alert(`✓ Εισήχθησαν ${toInsert.length} κρατήσεις επιτυχώς.`);
+    } catch (e: unknown) {
+      alert("Σφάλμα εισαγωγής: " + (e instanceof Error ? e.message : String(e)));
+    } finally {
+      setImporting(false);
+    }
+  }
 
   const filtered = reservations.filter((r) => {
     const matchTab = activeTab === "Όλες" || r.status === tabStatuses[activeTab];
@@ -68,11 +94,20 @@ export default function ReservationsPage() {
           <p className="text-xs text-muted-foreground">PMS</p>
           <h1 className="text-2xl font-bold font-heading text-foreground">Κρατήσεις</h1>
         </div>
-        <button
-          onClick={() => setNewOpen(true)}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-lg accent-gradient text-accent-foreground text-sm font-medium hover:opacity-90 transition-opacity">
-          <Plus className="w-4 h-4" /> Νέα Κράτηση
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleImport}
+            disabled={importing}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border bg-card text-foreground text-sm font-medium hover:bg-muted/50 transition-colors disabled:opacity-60">
+            <Upload className="w-4 h-4" />
+            {importing ? "Εισαγωγή..." : "Εισαγωγή Booking.com"}
+          </button>
+          <button
+            onClick={() => setNewOpen(true)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg accent-gradient text-accent-foreground text-sm font-medium hover:opacity-90 transition-opacity">
+            <Plus className="w-4 h-4" /> Νέα Κράτηση
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">

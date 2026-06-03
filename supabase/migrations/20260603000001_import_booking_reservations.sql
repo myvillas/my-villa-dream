@@ -1,0 +1,114 @@
+-- Import reservations from Booking.com XLS export (2026-05-01 to 2026-10-31)
+-- Generated from Checkin_with_contact_details_20260501_to_20261031.xls
+
+INSERT INTO public.reservations (
+  reservation_code, guest_name, guest_email, guest_phone, guest_country,
+  check_in, check_out, nights, total_amount, balance, status,
+  occupants_adults, occupants_children, suite_name, notes, source, booking_date
+)
+SELECT v.reservation_code, v.guest_name, v.guest_email, v.guest_phone, v.guest_country,
+       v.check_in, v.check_out, v.nights, v.total_amount, v.balance, v.status,
+       v.occupants_adults, v.occupants_children, v.suite_name, v.notes, v.source, v.booking_date
+FROM (VALUES
+  ('BK5307069665', 'Joanna Jarawka', 'joanna.jarawka.5307069665@booking.com', '48667963860', 'PL', '2026-05-03', '2026-05-04', 1, 159.2951, 159.2951, 'confirmed', 4, 0, 'Apartment with Garden View', NULL, 'Booking.com', '2026-05-03'),
+  ('BK6545463736', 'Jenny Hehne', 'jenny.hehne.6545463736@booking.com', '491741629961', 'DE', '2026-05-30', '2026-06-01', 2, 159.2951, 159.2951, 'confirmed', 1, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-29'),
+  ('BK5713234285', 'Viktoria Tzouma', 'viktoria.tzouma.5713234285@booking.com', '41799097802', 'CH', '2026-06-21', '2026-06-26', 5, 746.696, 746.696, 'confirmed', 3, 0, 'Apartment', 'Approximate time of arrival: between 14:00 and 15:00', 'Booking.com', '2026-05-10'),
+  ('BK6417631621', 'Safaya Kneafcy', 'safaya.kneafcy.6417631621@booking.com', '447902023778', 'GB', '2026-06-22', '2026-07-02', 10, 1015.5066, 1015.5066, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-15'),
+  ('BK5286203898', 'Melanie See', 'melanie.see.5286203898@booking.com', '4367688622353', 'AT', '2026-06-23', '2026-06-25', 2, 199.1189, 199.1189, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-16'),
+  ('BK5922767048', 'Annie Talbot', 'annie.talbot.5922767048@booking.com', '447477614952', 'GB', '2026-06-25', '2026-06-27', 2, 258.8546, 258.8546, 'confirmed', 2, 0, 'Double Room with Balcony and Sea View', NULL, 'Booking.com', '2026-05-30'),
+  ('BK6991213160', 'Jade Taylor', 'jade.taylor.6991213160@booking.com', '447532816527', 'GB', '2026-06-25', '2026-06-28', 3, 298.6784, 298.6784, 'confirmed', 2, 0, 'Double Room with Balcony', 'Approximate time of arrival: between 16:00 and 17:00', 'Booking.com', '2026-05-31'),
+  ('BK5587916316', 'Cătălin Zàmfir', 'c.t.lin.z.mfir.5587916316@booking.com', '353852074267', 'IE', '2026-06-27', '2026-07-02', 5, 1340.0, 1340.0, 'cancelled', 4, 0, 'Double Room with Balcony and Sea View', NULL, 'Booking.com', '2026-05-19'),
+  ('BK6017104374', 'Paul Metcalf', 'paul.metcalf.6017104374@booking.com', '447770605505', 'GB', '2026-07-01', '2026-07-03', 2, 238.9427, 238.9427, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-04-27'),
+  ('BK6023627410', 'Matušek Henrich', 'matu.ek.henrich.6023627410@booking.com', '421905930309', 'SK', '2026-07-01', '2026-07-11', 10, 1493.3921, 1493.3921, 'confirmed', 2, 0, 'Double Room with Balcony and Sea View', NULL, 'Booking.com', '2026-05-26'),
+  ('BK6720982526', 'Carolina Mora Barbosa Prata Saraiva', 'carolina.mora.barbosa.prata.saraiva.6720982526@booking.com', '351915737511', 'NL', '2026-07-02', '2026-07-06', 4, 597.3568, 597.3568, 'confirmed', 2, 0, 'Double Room with Balcony and Sea View', 'Hello, I would like to reserve a spot at the parking lot during our stay. Is that possible please?', 'Booking.com', '2026-06-01'),
+  ('BK5238808660', 'sandra delanote', 'sandra.delanote.5238808660@booking.com', '32475591637', 'BE', '2026-07-03', '2026-07-04', 1, 607.3128, 607.3128, 'confirmed', 8, 2, 'Apartment with Garden View', 'Approximate time of arrival: between 16:00 and 17:00', 'Booking.com', '2026-05-28'),
+  ('BK6751595253', 'Jennie Macklin', 'jennie.macklin.6751595253@booking.com', '447751403988', 'GB', '2026-07-04', '2026-07-09', 5, 600.0, 600.0, 'cancelled', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-22'),
+  ('BK6094250792', 'Mateja Kolbl', 'mateja.kolbl.6094250792@booking.com', '38641374379', 'SI', '2026-07-05', '2026-07-15', 10, 2200.0, 2200.0, 'cancelled', 2, 2, 'Apartment with Garden View', NULL, 'Booking.com', '2026-05-16'),
+  ('BK5323154012', 'Benedetta Magnano San Lio', 'benedetta.magnano.san.lio.5323154012@booking.com', '393923739572', 'IT', '2026-07-06', '2026-07-13', 7, 840.0, 840.0, 'cancelled', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-16'),
+  ('BK6696945593', 'Krantic Luka', 'krantic.luka.6696945593@booking.com', '381605054394', 'RS', '2026-07-07', '2026-07-16', 9, 1344.0529, 1344.0529, 'confirmed', 2, 0, 'Double Room with Balcony and Sea View', NULL, 'Booking.com', '2026-05-30'),
+  ('BK5132322469', 'Shachar Shalem', 'shachar.shalem.5132322469@booking.com', '972536466956', 'IL', '2026-07-09', '2026-07-11', 2, 577.4449, 577.4449, 'confirmed', 5, 0, 'Apartment', NULL, 'Booking.com', '2026-06-03'),
+  ('BK6210363220', 'dor dimant', 'dor.dimant.6210363220@booking.com', '972506574409', 'GR', '2026-07-09', '2026-07-11', 2, 340.0, 340.0, 'cancelled', 2, 0, 'Apartment', NULL, 'Booking.com', '2026-05-17'),
+  ('BK5358419995', 'de Boer Patricia', 'de.boer.patricia.5358419995@booking.com', '618467402', 'NL', '2026-07-10', '2026-07-17', 7, 2578.5902, 2578.5902, 'confirmed', 3, 3, 'Double Room with Balcony and Sea View', NULL, 'Booking.com', '2026-05-30'),
+  ('BK6400399770', 'Γιωργος  Πιτσης', '.6400399770@booking.com', '306973899309', 'GR', '2026-07-13', '2026-07-16', 3, 358.4141, 358.4141, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-14'),
+  ('BK5050719821', 'ΚΥΡΙΑΚΗ ΒΡΑΝΑ', '.5050719821@booking.com', '306973258145', 'GR', '2026-07-14', '2026-07-17', 3, 358.4141, 358.4141, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-02'),
+  ('BK6507316319', 'Lefteris Samartzis', 'lefteris.samartzis.6507316319@booking.com', '41792192579', 'CH', '2026-07-16', '2026-07-20', 4, 1274.3612, 1274.3612, 'confirmed', 2, 3, 'Apartment', 'Hi,
+
+I&#39;m coming with my car. Can you book a parking place for me at the hotel ?
+
+Kind regards,', 'Booking.com', '2026-05-05'),
+  ('BK5208743445', 'francisca irarrazaval', 'francisca.irarrazaval.5208743445@booking.com', '56998076695', 'CL', '2026-07-17', '2026-07-19', 2, 1632.7753, 1632.7753, 'confirmed', 10, 1, 'Apartment with Garden View', NULL, 'Booking.com', '2026-05-20'),
+  ('BK6339121728', 'Benedikte Njoten', 'benedikte.njoten.6339121728@booking.com', '4793424439', 'NO', '2026-07-18', '2026-07-22', 4, 1154.8898, 1154.8898, 'confirmed', 2, 2, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-03'),
+  ('BK6416621540', 'Elin Kaldestad; Kim Kristoffersen', 'elin.kaldestad.kim.kristoffersen.6416621540@booking.com', '4793424439', 'NO', '2026-07-18', '2026-07-23', 5, 1792.0705, 1792.0705, 'confirmed', 5, 1, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-03'),
+  ('BK6093667197', 'Julieta Bailaque', 'julieta.bailaque.6093667197@booking.com', '543415951401', 'AR', '2026-07-20', '2026-07-24', 4, 766.6079, 766.6079, 'confirmed', 2, 0, 'Apartment', NULL, 'Booking.com', '2026-05-17'),
+  ('BK6355093022', 'Sergey Kryukov', 'sergey.kryukov.6355093022@booking.com', '4523227027', 'DK', '2026-07-21', '2026-07-28', 7, 1742.2907, 1742.2907, 'confirmed', 4, 0, 'Apartment with Garden View', NULL, 'Booking.com', '2026-05-31'),
+  ('BK6110950292', 'Marián Mikula', 'mari.n.mikula.6110950292@booking.com', '421948374817', 'SK', '2026-07-22', '2026-07-29', 7, 975.6828, 975.6828, 'confirmed', 2, 0, 'Double Room with Balcony', 'This guest is interested in your airport shuttle service and would like to get more information from you.', 'Booking.com', '2026-05-17'),
+  ('BK5620458654', 'livadariu roxana maria', 'livadariu.roxana.maria.5620458654@booking.com', '40742574310', 'RO', '2026-07-23', '2026-07-28', 5, 696.9163, 696.9163, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-23'),
+  ('BK6772764498', 'Adam Kehoe', 'adam.kehoe.6772764498@booking.com', '353834001832', 'IE', '2026-07-24', '2026-08-03', 10, 2000.0, 2000.0, 'cancelled', 3, 0, 'Apartment', NULL, 'Booking.com', '2026-05-25'),
+  ('BK5071170908', 'Milos Hamovic', 'milos.hamovic.5071170908@booking.com', '38162352457', 'RS', '2026-07-25', '2026-08-07', 13, 2340.0, 2340.0, 'cancelled', 2, 0, 'Double Room with Balcony and Sea View', 'We need one parking spot so I would like to reserve it for our stay. We will be staying from 25.07. till 07.08.', 'Booking.com', '2026-05-28'),
+  ('BK6298110621', 'Maria Pia Quarto di Palo', 'maria.pia.quarto.di.palo.6298110621@booking.com', '393271691835', 'IT', '2026-07-27', '2026-07-29', 2, 500.0, 500.0, 'cancelled', 3, 1, 'Apartment with Garden View', NULL, 'Booking.com', '2026-05-02'),
+  ('BK6920425911', 'Cătălin Zàmfir', 'c.t.lin.z.mfir.6920425911@booking.com', '353852074267', 'IE', '2026-07-27', '2026-08-02', 6, 1920.0, 1920.0, 'cancelled', 4, 0, 'Double Room with Balcony and Sea View', NULL, 'Booking.com', '2026-05-17'),
+  ('BK5408043438', 'Viktória Moczó', 'vikt.ria.mocz.5408043438@booking.com', '36308230223', 'HU', '2026-07-28', '2026-08-02', 5, 700.0, 700.0, 'cancelled', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-27'),
+  ('BK6698424521', 'Anastasia Christakakis', 'anastasia.christakakis.6698424521@booking.com', '61421243350', 'AU', '2026-07-30', '2026-08-04', 5, 896.0352, 896.0352, 'confirmed', 2, 0, 'Double Room with Balcony and Sea View', NULL, 'Booking.com', '2026-05-31'),
+  ('BK5850478561', 'URSEA GABRIELA', 'ursea.gabriela.5850478561@booking.com', '40744545431', 'RO', '2026-07-31', '2026-08-06', 6, 1080.0, 1080.0, 'cancelled', 2, 0, 'Double Room with Balcony and Sea View', 'Approximate time of arrival: between 12:00 and 13:00', 'Booking.com', '2026-05-10'),
+  ('BK5286293668', 'Marko Risteski', 'marko.risteski.5286293668@booking.com', '38971797650', 'MK', '2026-08-01', '2026-08-03', 2, 278.7665, 278.7665, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-16'),
+  ('BK5394288062', 'Monica Natale Avolio', 'monica.natale.avolio.5394288062@booking.com', '393920002007', 'IT', '2026-08-01', '2026-08-06', 5, 1244.4934, 1244.4934, 'confirmed', 4, 0, 'Apartment with Garden View', NULL, 'Booking.com', '2026-05-13'),
+  ('BK6259092261', 'Lazar Djordjevic', 'lazar.djordjevic.6259092261@booking.com', '381644003881', 'RS', '2026-08-01', '2026-08-11', 10, 1400.0, 1400.0, 'cancelled', 2, 0, 'Double Room with Balcony', 'Approximate time of arrival: between 15:00 and 16:00', 'Booking.com', '2026-05-08'),
+  ('BK6882246940', 'Simona Jastrabová', 'simona.jastrabov.6882246940@booking.com', '421907650256', 'SK', '2026-08-02', '2026-08-09', 7, 975.6828, 975.6828, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-10'),
+  ('BK6238385213', 'Alessandra Pitzalis', 'alessandra.pitzalis.6238385213@booking.com', '393923413162', 'IT', '2026-08-03', '2026-08-14', 11, 1980.0, 1980.0, 'cancelled', 2, 0, 'Double Room with Balcony and Sea View', NULL, 'Booking.com', '2026-05-30'),
+  ('BK5213876409', 'Salvatore Maione', 'salvatore.maione.5213876409@booking.com', '393665274627', 'IT', '2026-08-04', '2026-08-08', 4, 1520.0, 1520.0, 'cancelled', 2, 0, 'Apartment', NULL, 'Booking.com', '2026-05-19'),
+  ('BK5950405130', 'Anastasia Anastasopoulou', 'anastasia.anastasopoulou.5950405130@booking.com', '306977474646', 'GR', '2026-08-04', '2026-08-07', 3, 418.1498, 418.1498, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-25'),
+  ('BK6447542258', 'Giuseppina Volpe', 'giuseppina.volpe.6447542258@booking.com', '393345898147', 'IT', '2026-08-04', '2026-08-13', 9, 1612.8634, 1612.8634, 'confirmed', 2, 0, 'Double Room with Balcony and Sea View', 'This guest is interested in your airport shuttle service and would like to get more information from you.', 'Booking.com', '2026-05-20'),
+  ('BK6435040582', 'Szaffková Martina', 'szaffkov.martina.6435040582@booking.com', '421903435350', 'SK', '2026-08-05', '2026-08-12', 7, 1742.2907, 1742.2907, 'confirmed', 2, 1, 'Apartment with Garden View', NULL, 'Booking.com', '2026-05-22'),
+  ('BK6275351978', 'Helene Martin', 'helene.martin.6275351978@booking.com', '33618943324', 'FR', '2026-08-07', '2026-08-09', 2, 497.7973, 497.7973, 'confirmed', 2, 2, 'Apartment with Garden View', 'Approximate time of arrival: between 18:00 and 19:00 
+This guest is interested in your airport shuttle service and would like to get more information from you.', 'Booking.com', '2026-05-19'),
+  ('BK6579701052', 'Ioana Teodora Georgescu', 'ioana.teodora.georgescu.6579701052@booking.com', '40785232748', 'RO', '2026-08-07', '2026-08-14', 7, 1254.4493, 1254.4493, 'confirmed', 2, 0, 'Double Room with Balcony and Sea View', NULL, 'Booking.com', '2026-05-17'),
+  ('BK6711858288', 'nieto recuero nuria', 'nieto.recuero.nuria.6711858288@booking.com', '34662053078', 'ES', '2026-08-07', '2026-08-10', 3, 418.1498, 418.1498, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-16'),
+  ('BK5489665397', 'Zorica Arsova', 'zorica.arsova.5489665397@booking.com', '38970367755', 'MK', '2026-08-08', '2026-08-19', 11, 2200.0, 2200.0, 'cancelled', 2, 1, 'Apartment', NULL, 'Booking.com', '2026-04-29'),
+  ('BK5550782572', 'Damian Kamil Tobiasz', 'damian.kamil.tobiasz.5550782572@booking.com', '4915167992223', 'DE', '2026-08-08', '2026-08-09', 1, 180.0, 180.0, 'cancelled', 2, 0, 'Double Room with Balcony and Sea View', NULL, 'Booking.com', '2026-05-15'),
+  ('BK5572445915', 'vasile Stoian', 'vasile.stoian.5572445915@booking.com', '40721200153', 'RO', '2026-08-08', '2026-08-14', 6, 1194.7136, 1194.7136, 'confirmed', 3, 0, 'Apartment', NULL, 'Booking.com', '2026-06-03'),
+  ('BK5950716504', 'Alice Bersini', 'alice.bersini.5950716504@booking.com', '393457266918', 'IT', '2026-08-09', '2026-08-14', 5, 900.0, 900.0, 'cancelled', 2, 0, 'Double Room with Balcony and Sea View', 'Approximate time of arrival: between 19:00 and 20:00', 'Booking.com', '2026-05-26'),
+  ('BK6351950091', 'Jenny Purrometo', 'jenny.purrometo.6351950091@booking.com', '393337453301', 'IT', '2026-08-09', '2026-08-12', 3, 418.1498, 418.1498, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-17'),
+  ('BK5876330729', 'GIULIA DALLAGLIO', 'giulia.dallaglio.5876330729@booking.com', '393200446485', 'IT', '2026-08-10', '2026-08-17', 7, 1400.0, 1400.0, 'cancelled', 2, 0, 'Apartment', 'Approximate time of arrival: between 17:00 and 18:00 
+This guest is interested in your airport shuttle service and would like to get more information from you.', 'Booking.com', '2026-05-27'),
+  ('BK5297312366', 'Naku Gabriela', 'naku.gabriela.5297312366@booking.com', '40753793532', 'RO', '2026-08-11', '2026-08-13', 2, 497.7973, 497.7973, 'confirmed', 2, 2, 'Apartment with Garden View', NULL, 'Booking.com', '2026-05-16'),
+  ('BK6496380954', 'Agnese Papi', 'agnese.papi.6496380954@booking.com', '393275820181', 'IT', '2026-08-11', '2026-08-12', 1, 139.3832, 139.3832, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-16'),
+  ('BK6759679968', 'Lupascu Cristina', 'lupascu.cristina.6759679968@booking.com', '491739435783', 'DE', '2026-08-11', '2026-08-15', 4, 800.0, 800.0, 'cancelled', 2, 1, 'Apartment', NULL, 'Booking.com', '2026-05-17'),
+  ('BK5304377819', 'Dorian Gasparevic', 'dorian.gasparevic.5304377819@booking.com', '436604563933', 'AT', '2026-08-12', '2026-08-19', 7, 1254.4493, 1254.4493, 'confirmed', 2, 0, 'Double Room with Balcony and Sea View', NULL, 'Booking.com', '2026-05-25'),
+  ('BK5496039735', 'MANTZIORI ELENI', 'mantziori.eleni.5496039735@booking.com', '306937438612', 'GR', '2026-08-12', '2026-08-15', 3, 746.696, 746.696, 'confirmed', 2, 1, 'Apartment with Garden View', NULL, 'Booking.com', '2026-05-07'),
+  ('BK5786782633', 'Lucia Hajro', 'lucia.hajro.5786782633@booking.com', '393499791496', 'IT', '2026-08-12', '2026-08-16', 4, 557.533, 557.533, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-06-01'),
+  ('BK6496337431', 'Marko Risteski', 'marko.risteski.6496337431@booking.com', '38971797650', 'MK', '2026-08-12', '2026-08-15', 3, 537.6211, 537.6211, 'confirmed', 2, 0, 'Double Room with Balcony and Sea View', NULL, 'Booking.com', '2026-05-16'),
+  ('BK6838277886', 'Tash Bell', 'tash.bell.6838277886@booking.com', '447818612152', 'GB', '2026-08-12', '2026-08-14', 2, 278.7665, 278.7665, 'confirmed', 2, 0, 'Double Room with Balcony', 'Approximate time of arrival: between 15:00 and 16:00', 'Booking.com', '2026-05-25'),
+  ('BK6057490546', 'THALASSIA GRAMMENIDI', 'thalassia.grammenidi.6057490546@booking.com', '306987040537', 'GR', '2026-08-13', '2026-08-17', 4, 560.0, 560.0, 'cancelled', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-12'),
+  ('BK6536915433', 'Gabriela Ploesteanu', 'gabriela.ploesteanu.6536915433@booking.com', '40721258338', 'RO', '2026-08-13', '2026-08-21', 8, 4320.0, 4320.0, 'cancelled', 5, 0, 'Triple Room with Balcony', 'This guest would like the rooms in this booking to be close together if possible.
+We&#39;d like to have two parking spots. Thank you', 'Booking.com', '2026-05-22'),
+  ('BK5086601601', 'Eliza Costigan', 'eliza.costigan.5086601601@booking.com', '61425832011', 'AU', '2026-08-14', '2026-08-20', 6, 840.0, 840.0, 'cancelled', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-06'),
+  ('BK6966116544', 'Viktoria Zaharieva', 'viktoria.zaharieva.6966116544@booking.com', '359877163030', 'BG', '2026-08-14', '2026-08-19', 5, 696.9163, 696.9163, 'confirmed', 2, 0, 'Double Room with Balcony', 'Approximate time of arrival: between 10:00 and 11:00 
+Hello, we saw that you have private parking. My question is whether it is paid and if so, what is the price per day?', 'Booking.com', '2026-05-13'),
+  ('BK6265771043', 'Jiří Matuš', 'ji.matu.6265771043@booking.com', '420602550771', 'CZ', '2026-08-15', '2026-08-23', 8, 1931.4537, 1931.4537, 'confirmed', 2, 2, 'Apartment with Garden View', 'Approximate time of arrival: between 19:00 and 20:00 
+We want to book Parking for 1car.', 'Booking.com', '2026-05-15'),
+  ('BK5702892711', 'Anita Kaur Mongia', 'anita.kaur.mongia.5702892711@booking.com', '4747689780', 'NO', '2026-08-17', '2026-08-22', 5, 866.1674, 866.1674, 'confirmed', 2, 0, 'Double Room with Balcony and Sea View', NULL, 'Booking.com', '2026-06-03'),
+  ('BK5814863191', 'Miroslav Molnar', 'miroslav.molnar.5814863191@booking.com', '381665454869', 'RS', '2026-08-17', '2026-08-23', 6, 796.4758, 796.4758, 'confirmed', 2, 0, 'Double Room with Balcony', 'Approximate time of arrival: between 13:00 and 14:00', 'Booking.com', '2026-06-01'),
+  ('BK5584222947', 'Andrea Sagone', 'andrea.sagone.5584222947@booking.com', '393402220476', 'IT', '2026-08-19', '2026-08-21', 2, 368.37, 368.37, 'confirmed', 3, 0, 'Apartment', 'Approximate time of arrival: between 18:00 and 19:00 
+Quiet Room. Flat Pillows', 'Booking.com', '2026-05-23'),
+  ('BK5132372104', 'Ercole Tiburzi', 'ercole.tiburzi.5132372104@booking.com', '393927712920', 'IT', '2026-08-21', '2026-08-24', 3, 358.4141, 358.4141, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-06-02'),
+  ('BK6172561996', 'Michela Mazza', 'michela.mazza.6172561996@booking.com', '393664859465', 'IT', '2026-08-21', '2026-08-28', 7, 840.0, 840.0, 'cancelled', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-20'),
+  ('BK5429017798', 'Daskalopoulou Maria', 'daskalopoulou.maria.5429017798@booking.com', '306972621728', 'GR', '2026-08-22', '2026-08-25', 3, 450.0, 450.0, 'cancelled', 2, 0, 'Double Room with Balcony and Sea View', NULL, 'Booking.com', '2026-06-01'),
+  ('BK5034958598', 'Ελένη Παγάνη', '.5034958598@booking.com', '306981804988', 'GR', '2026-08-23', '2026-08-25', 2, 240.0, 240.0, 'cancelled', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-24'),
+  ('BK5967331858', 'Stavroula Georgiou', 'stavroula.georgiou.5967331858@booking.com', '306947775133', 'GR', '2026-08-23', '2026-08-25', 2, 238.9427, 238.9427, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-21'),
+  ('BK6943221571', 'MARIA KOUTRI', 'maria.koutri.6943221571@booking.com', '306940712040', 'GR', '2026-08-25', '2026-08-27', 2, 238.9427, 238.9427, 'confirmed', 2, 0, 'Double Room with Balcony', 'Approximate time of arrival: between 11:00 and 12:00', 'Booking.com', '2026-05-24'),
+  ('BK5339452833', 'Robert Wahl', 'robert.wahl.5339452833@booking.com', '491729429942', 'DE', '2026-08-26', '2026-08-28', 2, 240.0, 240.0, 'cancelled', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-11'),
+  ('BK5922772000', 'Mariana Nedelcu', 'mariana.nedelcu.5922772000@booking.com', '40723070449', 'RO', '2026-08-26', '2026-08-27', 1, 119.4714, 119.4714, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-30'),
+  ('BK5713235026', 'Dario Miguel Montenegro', 'dario.miguel.montenegro.5713235026@booking.com', '447927313061', 'GB', '2026-08-27', '2026-08-31', 4, 677.0044, 677.0044, 'confirmed', 3, 0, 'Apartment', 'Approximate time of arrival: between 14:00 and 15:00 
+Hello, I would like to know if is possible to reserve a parking space for our car and how much it will cost for 4 nights. Thanks! 
+Dario', 'Booking.com', '2026-05-10'),
+  ('BK6308972465', 'Rowie Schopman', 'rowie.schopman.6308972465@booking.com', '31620541280', 'NL', '2026-08-30', '2026-09-01', 2, 238.9427, 238.9427, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-03'),
+  ('BK6017133400', 'Charles Phillips', 'charles.phillips.6017133400@booking.com', '447837064975', 'GB', '2026-08-31', '2026-09-01', 1, 119.4714, 119.4714, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-04-28'),
+  ('BK5053719007', 'Alex Gatto', 'alex.gatto.5053719007@booking.com', '393405419726', 'IT', '2026-09-04', '2026-09-05', 1, 119.4714, 119.4714, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-06-02'),
+  ('BK6506032301', 'Rhianna Ricks', 'rhianna.ricks.6506032301@booking.com', '447787447371', 'GB', '2026-09-10', '2026-09-13', 3, 358.4141, 358.4141, 'confirmed', 2, 0, 'Double Room with Balcony', NULL, 'Booking.com', '2026-05-30'),
+  ('BK6772722701', 'Kaloyan Petrov', 'kaloyan.petrov.6772722701@booking.com', '359888911041', 'BG', '2026-09-21', '2026-09-23', 2, 298.6784, 298.6784, 'confirmed', 3, 0, 'Apartment', NULL, 'Booking.com', '2026-05-24')
+) AS v(reservation_code, guest_name, guest_email, guest_phone, guest_country,
+      check_in, check_out, nights, total_amount, balance, status,
+      occupants_adults, occupants_children, suite_name, notes, source, booking_date)
+WHERE NOT EXISTS (
+  SELECT 1 FROM public.reservations r WHERE r.reservation_code = v.reservation_code
+);
