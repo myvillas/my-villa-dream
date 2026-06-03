@@ -10,9 +10,11 @@ import { useQueryClient } from "@tanstack/react-query";
 interface Props {
   open: boolean;
   onClose: () => void;
+  initialSuite?: string;
+  initialCheckIn?: string;
 }
 
-export default function NewReservationDialog({ open, onClose }: Props) {
+export default function NewReservationDialog({ open, onClose, initialSuite = "", initialCheckIn = "" }: Props) {
   const { data: suites } = useSuites();
   const { data: guests } = useGuests();
   const createReservation = useCreateReservation();
@@ -33,9 +35,9 @@ export default function NewReservationDialog({ open, onClose }: Props) {
 
   useEffect(() => {
     if (open) {
-      setForm({ guest_name: "", guest_email: "", guest_phone: "", guest_country: "", suite_name: "", check_in: "", check_out: "", source: "Direct", notes: "", custom_total: "" });
+      setForm({ guest_name: "", guest_email: "", guest_phone: "", guest_country: "", suite_name: initialSuite, check_in: initialCheckIn, check_out: "", source: "Direct", notes: "", custom_total: "" });
     }
-  }, [open]);
+  }, [open, initialSuite, initialCheckIn]);
 
   if (!open) return null;
 

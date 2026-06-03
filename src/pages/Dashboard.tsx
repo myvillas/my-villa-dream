@@ -1,16 +1,11 @@
 import { motion } from "framer-motion";
 import StatCard from "@/components/StatCard";
-import { BedDouble, CalendarCheck, TrendingUp, ArrowUpRight, Clock } from "lucide-react";
+import { BedDouble, CalendarCheck, TrendingUp, ArrowUpRight, ArrowDownRight, Clock } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useReservations } from "@/hooks/use-reservations";
 import { useSuites } from "@/hooks/use-suites";
 
-const revenueData = [
-  { month: "Jan", revenue: 3200 }, { month: "Feb", revenue: 4100 }, { month: "Mar", revenue: 5800 },
-  { month: "Apr", revenue: 7200 }, { month: "May", revenue: 9600 }, { month: "Jun", revenue: 12400 },
-  { month: "Jul", revenue: 14800 }, { month: "Aug", revenue: 15600 }, { month: "Sep", revenue: 11200 },
-  { month: "Oct", revenue: 7800 }, { month: "Nov", revenue: 4200 }, { month: "Dec", revenue: 2800 },
-];
+const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 const statusColors: Record<string, string> = {
   confirmed: "bg-info/10 text-info",
@@ -30,20 +25,36 @@ export default function Dashboard() {
   const { data: reservations = [] } = useReservations();
   const { data: suites = [] } = useSuites();
 
+  const todayStr = new Date().toISOString().split("T")[0];
+  const currentYearMonth = new Date().toISOString().substring(0, 7);
+
   const activeReservations = reservations.filter(r => r.status !== "cancelled" && r.status !== "checked-out");
   const occupiedSuites = suites.filter(s => s.status === "occupied").length;
   const occupancyRate = suites.length ? Math.round((occupiedSuites / suites.length) * 100) : 0;
   const revenueMTD = reservations
-    .filter(r => r.check_in?.startsWith("2026-03"))
+    .filter(r => r.check_in?.startsWith(currentYearMonth) && r.status !== "cancelled")
     .reduce((sum, r) => sum + Number(r.total_amount), 0);
 
-  const todayStr = "2026-03-08";
   const todayArrivals = reservations.filter(r => r.check_in === todayStr && r.status !== "cancelled").length;
+  const todayDepartures = reservations.filter(r => r.check_out === todayStr && r.status !== "cancelled").length;
+
+  // Build revenue chart from actual data (last 12 months)
+  const now = new Date();
+  const revenueData = Array.from({ length: 12 }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - 11 + i, 1);
+    const ym = d.toISOString().substring(0, 7);
+    const revenue = reservations
+      .filter(r => r.check_in?.startsWith(ym) && r.status !== "cancelled")
+      .reduce((sum, r) => sum + Number(r.total_amount), 0);
+    return { month: monthNames[d.getMonth()], revenue };
+  });
 
   const todayActivity = [
-    ...reservations.filter(r => r.check_out === todayStr).map(r => ({ time: "08:00", event: `Check-out: ${r.suite_name} — ${r.guest_name}`, type: "departure" })),
-    ...reservations.filter(r => r.check_in === todayStr).map(r => ({ time: "14:00", event: `Check-in: ${r.suite_name} — ${r.guest_name}`, type: "arrival" })),
-  ];
+    ...reservations.filter(r => r.check_out === todayStr && r.status !== "cancelled")
+      .map(r => ({ time: r.check_out_time || "11:00", event: `Check-out: ${r.suite_name} — ${r.guest_name}`, type: "departure" })),
+    ...reservations.filter(r => r.check_in === todayStr && r.status !== "cancelled")
+      .map(r => ({ time: r.check_in_time || "15:00", event: `Check-in: ${r.suite_name} — ${r.guest_name}`, type: "arrival" })),
+  ].sort((a, b) => a.time.localeCompare(b.time));
 
   const recentReservations = reservations.slice(0, 5);
 
@@ -51,13 +62,13 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold font-heading text-foreground">Dashboard</h1>
-        <p className="text-sm text-muted-foreground mt-1">3 Waves Paros — Here's what's happening at your suites today.</p>
+        <p className="text-sm text-muted-foreground mt-1">3 Waves Paros — {new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard title="Occupancy Rate" value={`${occupancyRate}%`} icon={<BedDouble className="w-5 h-5 text-primary-foreground" />} variant="primary" />
         <StatCard title="Today's Arrivals" value={todayArrivals} icon={<ArrowUpRight className="w-5 h-5 text-accent-foreground" />} variant="accent" />
-        <StatCard title="Active Reservations" value={activeReservations.length} icon={<CalendarCheck className="w-5 h-5 text-muted-foreground" />} />
+        <StatCard title="Today's Departures" value={todayDepartures} icon={<ArrowDownRight className="w-5 h-5 text-muted-foreground" />} />
         <StatCard title="Revenue (MTD)" value={`€${revenueMTD.toLocaleString()}`} icon={<TrendingUp className="w-5 h-5 text-muted-foreground" />} />
       </div>
 
