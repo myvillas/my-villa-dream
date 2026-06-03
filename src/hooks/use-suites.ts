@@ -18,6 +18,24 @@ export function useSuites() {
   });
 }
 
+export function useCreateSuite() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (suite: TablesInsert<"suites">) => {
+      const { data, error } = await supabase
+        .from("suites")
+        .insert(suite)
+        .select()
+        .single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["suites"] });
+    },
+  });
+}
+
 export function useUpdateSuite() {
   const queryClient = useQueryClient();
   return useMutation({
